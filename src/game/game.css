@@ -1,0 +1,35 @@
+:root {
+  --board-green: #779557;
+  --board-white: #ebecd0;
+  --tile-size: 100px;
+}
+
+.board {
+  display: grid;
+  grid-template-columns: repeat(8, var(--tile-size));
+  grid-template-rows: repeat(8, var(--tile-size));
+}
+
+.tile {
+  position: relative;
+}
+
+.tile-white {
+  background-color: var(--board-white);
+}
+
+.tile-black {
+  background-color: var(--board-green);
+}
+
+.num-span {
+  position: absolute;
+  top: 5px;
+  left: 5px;
+}
+
+.letter-span {
+  position: absolute;
+  bottom: 5px;
+  right: 5px;
+}
