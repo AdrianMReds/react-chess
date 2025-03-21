@@ -27,9 +27,39 @@ const Game = () => {
 
   const numbers = defineNumbers(gametype);
 
+  const color = gametype.split("_")[1];
+
   return (
-    <div>
-      <Board numbers={numbers} />
+    <div className="game">
+      <div className="top">
+        <h2>
+          {gametype === "two-players"
+            ? player2
+            : color === "white"
+            ? player2
+            : player1}
+        </h2>
+        <div className="captures"></div>
+      </div>
+      <div className="details">
+        <Board numbers={numbers} />
+        <div className="history">
+          <div>Historial</div>
+        </div>
+      </div>
+      <div className="bottom">
+        <h2>
+          {gametype === "two-players"
+            ? player1
+            : color === "white"
+            ? player1
+            : player2}
+        </h2>
+        <div className="captures"></div>
+        <div className="buttons-game">
+          <button>Menu</button>
+        </div>
+      </div>
     </div>
   );
 };
@@ -42,7 +72,7 @@ const Board = ({ numbers }) => {
       {numbers.map((number, x) => {
         return letters.map((letter, y) => {
           return (
-            <div className={getTileClassname(x, y)} style={{ color: "black" }}>
+            <div className={getTileClassname(x, y)}>
               {y === 0 && <span className="num-span">{number}</span>}
               {x === 7 && <span className="letter-span">{letter}</span>}
             </div>

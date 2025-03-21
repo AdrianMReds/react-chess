@@ -1,8 +1,53 @@
 :root {
   --board-green: #779557;
   --board-white: #ebecd0;
-  --tile-size: 100px;
+  --tile-size: calc(80vh / 8);
 }
+
+.game {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 0 8rem;
+}
+
+.top {
+  width: 100%;
+  height: 10vh;
+  display: flex;
+  align-items: flex-end;
+}
+
+.details {
+  width: 100%;
+  display: flex;
+  justify-content: flex-start;
+  gap: 4rem;
+  height: 80vh;
+}
+
+.history {
+  border: solid 1px var(--board-white);
+  width: calc(var(--tile-size) * 8);
+}
+
+.bottom {
+  width: 100%;
+  height: 10vh;
+  display: flex;
+  position: relative; /* Para aventar buttons al a derecha */
+}
+
+.buttons-game {
+  position: absolute;
+  right: 0;
+  display: flex;
+}
+
+/* BOARD */
 
 .board {
   display: grid;
@@ -16,10 +61,12 @@
 
 .tile-white {
   background-color: var(--board-white);
+  color: var(--board-green);
 }
 
 .tile-black {
   background-color: var(--board-green);
+  color: var(--board-white);
 }
 
 .num-span {
