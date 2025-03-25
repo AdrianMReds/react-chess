@@ -38,45 +38,22 @@
   width: 100%;
   height: 10vh;
   display: flex;
-  position: relative; /* Para aventar buttons al a derecha */
+  gap: 4rem;
+}
+
+.player-info {
+  display: flex;
+  gap: 1rem;
+  width: calc(var(--tile-size) * 8);
 }
 
 .buttons-game {
-  position: absolute;
-  right: 0;
   display: flex;
+  width: calc(var(--tile-size) * 8);
+  justify-content: flex-end;
 }
 
-/* BOARD */
-
-.board {
-  display: grid;
-  grid-template-columns: repeat(8, var(--tile-size));
-  grid-template-rows: repeat(8, var(--tile-size));
-}
-
-.tile {
-  position: relative;
-}
-
-.tile-white {
-  background-color: var(--board-white);
-  color: var(--board-green);
-}
-
-.tile-black {
-  background-color: var(--board-green);
-  color: var(--board-white);
-}
-
-.num-span {
-  position: absolute;
-  top: 5px;
-  left: 5px;
-}
-
-.letter-span {
-  position: absolute;
-  bottom: 5px;
-  right: 5px;
+.buttons-game button {
+  width: 100px;
+  height: 40px;
 }
