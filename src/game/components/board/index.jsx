@@ -26,8 +26,11 @@ const Board = ({ numbers }) => {
               {y === 0 && <span className="num-span">{number}</span>}
               {x === 7 && <span className="letter-span">{letter}</span>}
               {pieces.map((piece) => {
-                piece.position.x === x && piece.position.y === y && (
-                  <div className="piece">{piece.name}</div>
+                return (
+                  piece.position.x === x &&
+                  piece.position.y === y && (
+                    <img src={`/${piece.image}`} alt={piece.name} />
+                  )
                 );
               })}
             </div>
