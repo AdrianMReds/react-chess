@@ -4,6 +4,7 @@ const defineInitialPositions = (numbers) => {
   const darkPieces = [
     {
       name: "darkRook1",
+      type: "rook",
       position: darkOnTop ? { x: 0, y: 0 } : { x: 7, y: 0 },
       color: "dark",
       image: "rd.png",
@@ -11,6 +12,7 @@ const defineInitialPositions = (numbers) => {
     },
     {
       name: "darkKnight1",
+      type: "knight",
       position: darkOnTop ? { x: 0, y: 1 } : { x: 7, y: 1 },
       color: "dark",
       image: "nd.png",
@@ -18,6 +20,7 @@ const defineInitialPositions = (numbers) => {
     },
     {
       name: "darkBishop1",
+      type: "bishop",
       position: darkOnTop ? { x: 0, y: 2 } : { x: 7, y: 2 },
       color: "dark",
       image: "bd.png",
@@ -25,6 +28,7 @@ const defineInitialPositions = (numbers) => {
     },
     {
       name: "darkQueen",
+      type: "queen",
       position: darkOnTop ? { x: 0, y: 3 } : { x: 7, y: 4 },
       color: "dark",
       image: "qd.png",
@@ -32,6 +36,7 @@ const defineInitialPositions = (numbers) => {
     },
     {
       name: "darkKing",
+      type: "king",
       position: darkOnTop ? { x: 0, y: 4 } : { x: 7, y: 3 },
       color: "dark",
       image: "kd.png",
@@ -39,6 +44,7 @@ const defineInitialPositions = (numbers) => {
     },
     {
       name: "darkBishop2",
+      type: "bishop",
       position: darkOnTop ? { x: 0, y: 5 } : { x: 7, y: 5 },
       color: "dark",
       image: "bd.png",
@@ -46,6 +52,7 @@ const defineInitialPositions = (numbers) => {
     },
     {
       name: "darkKnight2",
+      type: "knight",
       position: darkOnTop ? { x: 0, y: 6 } : { x: 7, y: 6 },
       color: "dark",
       image: "nd.png",
@@ -53,6 +60,7 @@ const defineInitialPositions = (numbers) => {
     },
     {
       name: "darkRook2",
+      type: "rook",
       position: darkOnTop ? { x: 0, y: 7 } : { x: 7, y: 7 },
       color: "dark",
       image: "rd.png",
@@ -62,6 +70,7 @@ const defineInitialPositions = (numbers) => {
     // Peones dark
     {
       name: "darkPawn1",
+      type: "pawn",
       position: darkOnTop ? { x: 1, y: 0 } : { x: 6, y: 0 },
       color: "dark",
       image: "pd.png",
@@ -69,6 +78,7 @@ const defineInitialPositions = (numbers) => {
     },
     {
       name: "darkPawn2",
+      type: "pawn",
       position: darkOnTop ? { x: 1, y: 1 } : { x: 6, y: 1 },
       color: "dark",
       image: "pd.png",
@@ -76,6 +86,7 @@ const defineInitialPositions = (numbers) => {
     },
     {
       name: "darkPawn3",
+      type: "pawn",
       position: darkOnTop ? { x: 1, y: 2 } : { x: 6, y: 2 },
       color: "dark",
       image: "pd.png",
@@ -83,6 +94,7 @@ const defineInitialPositions = (numbers) => {
     },
     {
       name: "darkPawn4",
+      type: "pawn",
       position: darkOnTop ? { x: 1, y: 3 } : { x: 6, y: 3 },
       color: "dark",
       image: "pd.png",
@@ -90,6 +102,7 @@ const defineInitialPositions = (numbers) => {
     },
     {
       name: "darkPawn5",
+      type: "pawn",
       position: darkOnTop ? { x: 1, y: 4 } : { x: 6, y: 4 },
       color: "dark",
       image: "pd.png",
@@ -97,6 +110,7 @@ const defineInitialPositions = (numbers) => {
     },
     {
       name: "darkPawn6",
+      type: "pawn",
       position: darkOnTop ? { x: 1, y: 5 } : { x: 6, y: 5 },
       color: "dark",
       image: "pd.png",
@@ -104,6 +118,7 @@ const defineInitialPositions = (numbers) => {
     },
     {
       name: "darkPawn7",
+      type: "pawn",
       position: darkOnTop ? { x: 1, y: 6 } : { x: 6, y: 6 },
       color: "dark",
       image: "pd.png",
@@ -111,6 +126,7 @@ const defineInitialPositions = (numbers) => {
     },
     {
       name: "darkPawn8",
+      type: "pawn",
       position: darkOnTop ? { x: 1, y: 7 } : { x: 6, y: 7 },
       color: "dark",
       image: "pd.png",
@@ -121,6 +137,7 @@ const defineInitialPositions = (numbers) => {
   const lightPieces = [
     {
       name: "lightRook1",
+      type: "rook",
       position: darkOnTop ? { x: 7, y: 0 } : { x: 0, y: 0 },
       color: "light",
       image: "rl.png",
@@ -128,6 +145,7 @@ const defineInitialPositions = (numbers) => {
     },
     {
       name: "lightKnight1",
+      type: "knight",
       position: darkOnTop ? { x: 7, y: 1 } : { x: 0, y: 1 },
       color: "light",
       image: "nl.png",
@@ -135,6 +153,7 @@ const defineInitialPositions = (numbers) => {
     },
     {
       name: "lightBishop1",
+      type: "bishop",
       position: darkOnTop ? { x: 7, y: 2 } : { x: 0, y: 2 },
       color: "light",
       image: "bl.png",
@@ -142,6 +161,7 @@ const defineInitialPositions = (numbers) => {
     },
     {
       name: "lightQueen",
+      type: "queen",
       position: darkOnTop ? { x: 7, y: 3 } : { x: 0, y: 4 },
       color: "light",
       image: "ql.png",
@@ -149,6 +169,7 @@ const defineInitialPositions = (numbers) => {
     },
     {
       name: "lightKing",
+      type: "king",
       position: darkOnTop ? { x: 7, y: 4 } : { x: 0, y: 3 },
       color: "light",
       image: "kl.png",
@@ -156,6 +177,7 @@ const defineInitialPositions = (numbers) => {
     },
     {
       name: "lightBishop2",
+      type: "bishop",
       position: darkOnTop ? { x: 7, y: 5 } : { x: 0, y: 5 },
       color: "light",
       image: "bl.png",
@@ -163,6 +185,7 @@ const defineInitialPositions = (numbers) => {
     },
     {
       name: "lightKnight2",
+      type: "knight",
       position: darkOnTop ? { x: 7, y: 6 } : { x: 0, y: 6 },
       color: "light",
       image: "nl.png",
@@ -170,6 +193,7 @@ const defineInitialPositions = (numbers) => {
     },
     {
       name: "lightRook2",
+      type: "rook",
       position: darkOnTop ? { x: 7, y: 7 } : { x: 0, y: 7 },
       color: "light",
       image: "rl.png",
@@ -179,6 +203,7 @@ const defineInitialPositions = (numbers) => {
     // Peones light
     {
       name: "lightPawn1",
+      type: "pawn",
       position: darkOnTop ? { x: 6, y: 0 } : { x: 1, y: 0 },
       color: "light",
       image: "pl.png",
@@ -186,6 +211,7 @@ const defineInitialPositions = (numbers) => {
     },
     {
       name: "lightPawn2",
+      type: "pawn",
       position: darkOnTop ? { x: 6, y: 1 } : { x: 1, y: 1 },
       color: "light",
       image: "pl.png",
@@ -193,6 +219,7 @@ const defineInitialPositions = (numbers) => {
     },
     {
       name: "lightPawn3",
+      type: "pawn",
       position: darkOnTop ? { x: 6, y: 2 } : { x: 1, y: 2 },
       color: "light",
       image: "pl.png",
@@ -200,6 +227,7 @@ const defineInitialPositions = (numbers) => {
     },
     {
       name: "lightPawn4",
+      type: "pawn",
       position: darkOnTop ? { x: 6, y: 3 } : { x: 1, y: 3 },
       color: "light",
       image: "pl.png",
@@ -207,6 +235,7 @@ const defineInitialPositions = (numbers) => {
     },
     {
       name: "lightPawn5",
+      type: "pawn",
       position: darkOnTop ? { x: 6, y: 4 } : { x: 1, y: 4 },
       color: "light",
       image: "pl.png",
@@ -214,6 +243,7 @@ const defineInitialPositions = (numbers) => {
     },
     {
       name: "lightPawn6",
+      type: "pawn",
       position: darkOnTop ? { x: 6, y: 5 } : { x: 1, y: 5 },
       color: "light",
       image: "pl.png",
@@ -221,6 +251,7 @@ const defineInitialPositions = (numbers) => {
     },
     {
       name: "lightPawn7",
+      type: "pawn",
       position: darkOnTop ? { x: 6, y: 6 } : { x: 1, y: 6 },
       color: "light",
       image: "pl.png",
@@ -228,6 +259,7 @@ const defineInitialPositions = (numbers) => {
     },
     {
       name: "lightPawn8",
+      type: "pawn",
       position: darkOnTop ? { x: 6, y: 7 } : { x: 1, y: 7 },
       color: "light",
       image: "pl.png",

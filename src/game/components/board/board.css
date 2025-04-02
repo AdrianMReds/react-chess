@@ -14,6 +14,19 @@
 
 .tile {
   position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.tile.has-piece:hover {
+  cursor: grab;
+  border: 1px solid rgba(0, 0, 0, 0.5);
+}
+
+.tile img {
+  width: calc(var(--tile-size) * 0.8);
+  height: calc(var(--tile-size) * 0.8);
 }
 
 .tile-white {
@@ -29,11 +42,11 @@
 .num-span {
   position: absolute;
   top: 5px;
-  left: 5px;
+  left: 3px;
 }
 
 .letter-span {
   position: absolute;
   bottom: 5px;
-  right: 5px;
+  right: 3px;
 }
