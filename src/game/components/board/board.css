@@ -24,9 +24,9 @@
   border: 1px solid rgba(0, 0, 0, 0.5);
 }
 
-.tile.possible-movement {
+/* .tile.possible-movement {
   background-color: rgba(204, 204, 204, 0.5);
-}
+} */
 
 .tile img {
   width: calc(var(--tile-size) * 0.8);
@@ -41,6 +41,13 @@
 .tile-black {
   background-color: var(--board-green);
   color: var(--board-white);
+}
+
+.movement-icon {
+  width: calc(var(--tile-size) * 0.3);
+  height: calc(var(--tile-size) * 0.3);
+  background-color: rgba(0, 0, 0, 0.5);
+  border-radius: 50%;
 }
 
 .num-span {

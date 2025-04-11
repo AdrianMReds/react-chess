@@ -2,6 +2,12 @@ import "./board.css";
 import { useState } from "react";
 
 import { defineInitialPositions } from "../../../constants";
+import {
+  getPawnMovements,
+  getKnightMovements,
+  getKingMovements,
+  getRookMovements,
+} from "./movements";
 
 const Board = ({ numbers }) => {
   const darkOnTop = numbers[0] === "8";
@@ -46,26 +52,16 @@ const Board = ({ numbers }) => {
 
     switch (piece.type) {
       case "pawn":
-        possibleMovements = darkOnTop
-          ? piece.color === "dark"
-            ? [{ x: x, y: y + 1 }]
-            : [{ x: x, y: y - 1 }]
-          : piece.color === "dark"
-          ? [{ x: x, y: y - 1 }]
-          : [{ x: x, y: y + 1 }];
-
-        if (!piece.hasMoved) {
-          possibleMovements.push(
-            darkOnTop
-              ? piece.color === "dark"
-                ? { x: x, y: y + 2 }
-                : { x: x, y: y - 2 }
-              : piece.color === "dark"
-              ? { x: x, y: y - 2 }
-              : { x: x, y: y + 2 }
-          );
-        }
-        console.log("Posibles movimientos", possibleMovements);
+        possibleMovements = getPawnMovements(piece, x, y, darkOnTop, pieces);
+        break;
+      case "knight":
+        possibleMovements = getKnightMovements(piece, x, y, pieces);
+        break;
+      case "king":
+        possibleMovements = getKingMovements(piece, x, y, pieces);
+        break;
+      case "rook":
+        possibleMovements = getRookMovements(piece, x, y, pieces);
         break;
     }
 
@@ -79,7 +75,11 @@ const Board = ({ numbers }) => {
           const hasPiece = pieces.some((piece) => {
             return piece.position.x === x && piece.position.y === y;
           });
-          // hasPiece && console.log(x, y, hasPiece);
+
+          const isPossibleMovement = possiblePieceMovements.some((movement) => {
+            return movement.x === x && movement.y === y;
+          });
+
           return (
             <div
               key={`p${x}${y}`}
@@ -96,6 +96,7 @@ const Board = ({ numbers }) => {
                   )
                 );
               })}
+              {isPossibleMovement && <div className="movement-icon"></div>}
             </div>
           );
         });
