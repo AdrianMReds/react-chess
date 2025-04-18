@@ -5,7 +5,7 @@ const defineInitialPositions = (numbers) => {
     {
       name: "darkRook1",
       type: "rook",
-      position: darkOnTop ? { x: 4, y: 4 } : { x: 0, y: 7 },
+      position: darkOnTop ? { x: 0, y: 0 } : { x: 0, y: 7 },
       color: "dark",
       image: "rd.png",
       movements: [],

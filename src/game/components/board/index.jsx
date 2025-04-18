@@ -7,6 +7,8 @@ import {
   getKnightMovements,
   getKingMovements,
   getRookMovements,
+  getBishopMovements,
+  getQueenMovements,
 } from "./movements";
 
 const Board = ({ numbers }) => {
@@ -18,6 +20,7 @@ const Board = ({ numbers }) => {
 
   const [pieces, setPieces] = useState(defineInitialPositions(numbers));
   const [possiblePieceMovements, setPosiblePieceMovements] = useState([]);
+  const [selectedPiece, setSelectedPiece] = useState(null);
 
   const getTileClassname = (x, y, hasPiece) => {
     let classname = "tile";
@@ -32,21 +35,46 @@ const Board = ({ numbers }) => {
 
     classname += isPossibleMovement ? " possible-movement" : "";
 
+    classname +=
+      selectedPiece &&
+      selectedPiece.position.x === x &&
+      selectedPiece.position.y === y
+        ? " selected-piece"
+        : "";
+
     return classname;
   };
 
-  const handlePieceClick = (x, y, hasPiece) => {
+  const handlePieceClick = (x, y, hasPiece, isPossibleMovement) => {
     if (!hasPiece) {
-      console.log(x, y);
+      if (isPossibleMovement) {
+        const tempPieces = [...pieces];
+        const tempPiece = tempPieces.find((p) => {
+          return (
+            p.position.x === selectedPiece.position.x &&
+            p.position.y === selectedPiece.position.y
+          );
+        });
+
+        const pieceIndex = tempPieces.indexOf(tempPiece);
+
+        tempPieces[pieceIndex].position.x = x;
+        tempPieces[pieceIndex].position.y = y;
+
+        tempPieces[pieceIndex].hasMoved = true;
+
+        setPieces(tempPieces);
+        setPosiblePieceMovements([]);
+        setSelectedPiece(null);
+      }
       return;
     }
 
-    console.log("Posición", x, y);
     const piece = pieces.find((p) => {
       return p.position.x === x && p.position.y === y;
     });
 
-    console.log(piece);
+    setSelectedPiece(piece);
 
     var possibleMovements = [];
 
@@ -62,6 +90,12 @@ const Board = ({ numbers }) => {
         break;
       case "rook":
         possibleMovements = getRookMovements(piece, x, y, pieces);
+        break;
+      case "bishop":
+        possibleMovements = getBishopMovements(piece, x, y, pieces);
+        break;
+      case "queen":
+        possibleMovements = getQueenMovements(piece, x, y, pieces);
         break;
     }
 
@@ -84,7 +118,9 @@ const Board = ({ numbers }) => {
             <div
               key={`p${x}${y}`}
               className={getTileClassname(x, y, hasPiece)}
-              onClick={() => handlePieceClick(x, y, hasPiece)}
+              onClick={() =>
+                handlePieceClick(x, y, hasPiece, isPossibleMovement)
+              }
             >
               {x === 0 && <span className="num-span">{number}</span>}
               {y === 7 && <span className="letter-span">{letter}</span>}
