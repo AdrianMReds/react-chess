@@ -23,6 +23,7 @@ const isInsideBoard = (x, y) => {
   return x >= 0 && y >= 0 && x <= 7 && y <= 7;
 };
 
+// TODO: Movimiento en pasant
 const getPawnMovements = (piece, x, y, darkOnTop, pieces) => {
   var possibleMovements = darkOnTop
     ? piece.color === "dark"
@@ -32,9 +33,13 @@ const getPawnMovements = (piece, x, y, darkOnTop, pieces) => {
     ? [{ x: x, y: y - 1 }]
     : [{ x: x, y: y + 1 }];
 
-  console.log("possibleMovmentsPawn", possibleMovements[0]);
+  // Usamos getPossibleTakes para ver si hay una pieza enemiga y quitar el movimiento
+  if (getPossibleTakes(pieces, possibleMovements[0], piece)) {
+    possibleMovements.pop();
+  }
 
   if (
+    possibleMovements.length &&
     !piece.hasMoved &&
     !getFriendlyPieceCollision(pieces, possibleMovements[0], piece)
   ) {
@@ -73,13 +78,18 @@ const getPawnMovements = (piece, x, y, darkOnTop, pieces) => {
         { x: x - 1, y: y + 1 },
       ];
 
-  // Solo checar si alguno de possibleTakes es un take
-
   const filteredMovements = possibleMovements.filter((movement) => {
     return (
       isInsideBoard(movement.x, movement.y) &&
       getFriendlyPieceCollision(pieces, movement, piece) === false
     );
+  });
+
+  // Solo checar si alguno de possibleTakes es un take
+  possibleTakes.forEach((take) => {
+    if (getPossibleTakes(pieces, take, piece)) {
+      filteredMovements.push({ ...take, isTake: true });
+    }
   });
 
   return filteredMovements;
@@ -138,8 +148,6 @@ const getKingMovements = (piece, x, y, pieces) => {
       ? { ...movement, isTake: true }
       : movement;
   });
-
-  console.log("filteredMovementsKing", filteredMovements);
 
   return filteredMovements;
 };

@@ -3,6 +3,7 @@ import { Button, message } from "antd";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
+// TODO: Agregar jugar al dar click a Enter
 const Menu = () => {
   const [gametype, setGametype] = useState("two-players");
   const [player1, setPlayer1] = useState("");

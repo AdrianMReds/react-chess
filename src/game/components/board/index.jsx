@@ -22,6 +22,9 @@ const Board = ({ numbers }) => {
   const [possiblePieceMovements, setPosiblePieceMovements] = useState([]);
   const [selectedPiece, setSelectedPiece] = useState(null);
 
+  const [capturesTop, setCapturesTop] = useState([]);
+  const [capturesBottom, setCapturesBottom] = useState([]);
+
   const getTileClassname = (x, y, hasPiece) => {
     let classname = "tile";
 
@@ -45,7 +48,13 @@ const Board = ({ numbers }) => {
     return classname;
   };
 
-  const handlePieceClick = (x, y, hasPiece, isPossibleMovement) => {
+  const handlePieceClick = (
+    x,
+    y,
+    hasPiece,
+    isPossibleMovement,
+    isPossibleTake
+  ) => {
     if (!hasPiece) {
       if (isPossibleMovement) {
         const tempPieces = [...pieces];
@@ -70,14 +79,33 @@ const Board = ({ numbers }) => {
       return;
     }
 
-    // Checar si la tile con pieza es un possible movement
-    // ES UN TAKE!
-    if (isPossibleMovement) {
-    }
-
     const piece = pieces.find((p) => {
       return p.position.x === x && p.position.y === y;
     });
+
+    // Checar si la tile con pieza es un possible movement && isTake===true
+    if (isPossibleTake) {
+      // Agregamos como captura la pieza clickeada
+      darkOnTop
+        ? piece.color === "dark"
+          ? setCapturesBottom([...capturesTop, piece])
+          : setCapturesTop([...capturesBottom, piece])
+        : piece.color === "dark"
+        ? setCapturesTop([...capturesBottom, piece])
+        : setCapturesBottom([...capturesTop, piece]);
+
+      const tempPieces = [...pieces];
+
+      const tempPieceIndex = tempPieces.indexOf(piece);
+
+      tempPieces.splice(tempPieceIndex, 1);
+
+      setPieces(tempPieces);
+      setPosiblePieceMovements([]);
+      setSelectedPiece(null);
+
+      return;
+    }
 
     setSelectedPiece(piece);
 
@@ -119,12 +147,22 @@ const Board = ({ numbers }) => {
             return movement.x === x && movement.y === y;
           });
 
+          const isPossibleTake = possiblePieceMovements.some((movement) => {
+            return movement.x === x && movement.y === y && movement.isTake;
+          });
+
           return (
             <div
               key={`p${x}${y}`}
               className={getTileClassname(x, y, hasPiece)}
               onClick={() =>
-                handlePieceClick(x, y, hasPiece, isPossibleMovement)
+                handlePieceClick(
+                  x,
+                  y,
+                  hasPiece,
+                  isPossibleMovement,
+                  isPossibleTake
+                )
               }
             >
               {x === 0 && <span className="num-span">{number}</span>}
