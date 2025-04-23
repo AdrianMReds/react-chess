@@ -70,6 +70,11 @@ const Board = ({ numbers }) => {
       return;
     }
 
+    // Checar si la tile con pieza es un possible movement
+    // ES UN TAKE!
+    if (isPossibleMovement) {
+    }
+
     const piece = pieces.find((p) => {
       return p.position.x === x && p.position.y === y;
     });

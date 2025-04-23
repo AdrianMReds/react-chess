@@ -8,11 +8,21 @@ const getFriendlyPieceCollision = (pieces, movement, piece) => {
   });
 };
 
+const getPossibleTakes = (pieces, movement, piece) => {
+  const response = pieces.some((p) => {
+    return (
+      p.position.x === movement.x &&
+      p.position.y === movement.y &&
+      p.color !== piece.color
+    );
+  });
+  return response;
+};
+
 const isInsideBoard = (x, y) => {
   return x >= 0 && y >= 0 && x <= 7 && y <= 7;
 };
 
-// TODO: evitar que peon se pueda mover 2 adelante si le estorban
 const getPawnMovements = (piece, x, y, darkOnTop, pieces) => {
   var possibleMovements = darkOnTop
     ? piece.color === "dark"
@@ -39,6 +49,32 @@ const getPawnMovements = (piece, x, y, darkOnTop, pieces) => {
     );
   }
 
+  const possibleTakes = darkOnTop
+    ? piece.color === "dark"
+      ? //Va hacia abajo
+        [
+          { x: x + 1, y: y + 1 },
+          { x: x - 1, y: y + 1 },
+        ]
+      : //Va hacia arriba
+        [
+          { x: x + 1, y: y - 1 },
+          { x: x - 1, y: y - 1 },
+        ]
+    : piece.color === "dark"
+    ? // Va hacia arriba
+      [
+        { x: x + 1, y: y - 1 },
+        { x: x - 1, y: y - 1 },
+      ]
+    : // Va hacia abajo
+      [
+        { x: x + 1, y: y + 1 },
+        { x: x - 1, y: y + 1 },
+      ];
+
+  // Solo checar si alguno de possibleTakes es un take
+
   const filteredMovements = possibleMovements.filter((movement) => {
     return (
       isInsideBoard(movement.x, movement.y) &&
@@ -61,16 +97,23 @@ const getKnightMovements = (piece, x, y, pieces) => {
     { x: x + 1, y: y + 2 },
   ];
 
-  const filteredMovements = possibleMovements.filter((movement) => {
+  var filteredMovements = possibleMovements.filter((movement) => {
     return (
       isInsideBoard(movement.x, movement.y) &&
       getFriendlyPieceCollision(pieces, movement, piece) === false
     );
   });
 
+  filteredMovements = filteredMovements.map((movement) => {
+    return getPossibleTakes(pieces, movement, piece)
+      ? { ...movement, isTake: true }
+      : movement;
+  });
+
   return filteredMovements;
 };
 
+// TODO: Quitar movimientos de jaque
 const getKingMovements = (piece, x, y, pieces) => {
   var possibleMovements = [
     { x: x - 1, y: y - 1 },
@@ -83,12 +126,20 @@ const getKingMovements = (piece, x, y, pieces) => {
     { x: x + 1, y: y + 1 },
   ];
 
-  const filteredMovements = possibleMovements.filter((movement) => {
+  var filteredMovements = possibleMovements.filter((movement) => {
     return (
       isInsideBoard(movement.x, movement.y) &&
       getFriendlyPieceCollision(pieces, movement, piece) === false
     );
   });
+
+  filteredMovements = filteredMovements.map((movement) => {
+    return getPossibleTakes(pieces, movement, piece)
+      ? { ...movement, isTake: true }
+      : movement;
+  });
+
+  console.log("filteredMovementsKing", filteredMovements);
 
   return filteredMovements;
 };
@@ -108,12 +159,25 @@ const getRookMovements = (piece, x, y, pieces) => {
       let newX = x + dx * i;
       let newY = y + dy * i;
 
-      if (
-        isInsideBoard(newX, newY) &&
-        getFriendlyPieceCollision(pieces, { x: newX, y: newY }, piece) === false
-      ) {
-        possibleMovements.push({ x: newX, y: newY });
+      // Verificamos si la nueva posición está dentro del tablero
+      if (isInsideBoard(newX, newY)) {
+        // Verificamos si hay una pieza enemiga en la nueva posición
+        if (getPossibleTakes(pieces, { x: newX, y: newY }, piece)) {
+          possibleMovements.push({ x: newX, y: newY, isTake: true });
+          break;
+        }
+        // Verificamos si hay una pieza amiga en la nueva posición
+        if (
+          getFriendlyPieceCollision(pieces, { x: newX, y: newY }, piece) ===
+          false
+        ) {
+          possibleMovements.push({ x: newX, y: newY });
+        } else {
+          // Si hay una pieza amiga, no podemos movernos más en esa dirección
+          break;
+        }
       } else {
+        // Si la nueva posición está fuera del tablero, no podemos movernos más en esa dirección
         break;
       }
     }
@@ -137,12 +201,25 @@ const getBishopMovements = (piece, x, y, pieces) => {
       let newX = x + dx * i;
       let newY = y + dy * i;
 
-      if (
-        isInsideBoard(newX, newY) &&
-        getFriendlyPieceCollision(pieces, { x: newX, y: newY }, piece) === false
-      ) {
-        possibleMovements.push({ x: newX, y: newY });
+      // Verificamos si la nueva posición está dentro del tablero
+      if (isInsideBoard(newX, newY)) {
+        // Verificamos si hay una pieza enemiga en la nueva posición
+        if (getPossibleTakes(pieces, { x: newX, y: newY }, piece)) {
+          possibleMovements.push({ x: newX, y: newY, isTake: true });
+          break;
+        }
+        // Verificamos si hay una pieza amiga en la nueva posición
+        if (
+          getFriendlyPieceCollision(pieces, { x: newX, y: newY }, piece) ===
+          false
+        ) {
+          possibleMovements.push({ x: newX, y: newY });
+        } else {
+          // Si hay una pieza amiga, no podemos movernos más en esa dirección
+          break;
+        }
       } else {
+        // Si la nueva posición está fuera del tablero, no podemos movernos más en esa dirección
         break;
       }
     }
