@@ -1,3 +1,21 @@
+const movePiece = (tempPieces, selectedPiece, x, y) => {
+  const tempPiece = tempPieces.find((p) => {
+    return (
+      p.position.x === selectedPiece.position.x &&
+      p.position.y === selectedPiece.position.y
+    );
+  });
+
+  const pieceIndex = tempPieces.indexOf(tempPiece);
+
+  tempPieces[pieceIndex].position.x = x;
+  tempPieces[pieceIndex].position.y = y;
+
+  tempPieces[pieceIndex].hasMoved = true;
+
+  return tempPieces;
+};
+
 const getFriendlyPieceCollision = (pieces, movement, piece) => {
   return pieces.some((p) => {
     return (
@@ -252,4 +270,5 @@ export {
   getRookMovements,
   getBishopMovements,
   getQueenMovements,
+  movePiece,
 };

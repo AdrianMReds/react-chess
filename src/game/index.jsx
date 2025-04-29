@@ -1,6 +1,9 @@
 import "./game.css";
 import { useParams } from "react-router-dom";
 import Board from "./components/board";
+import { useState } from "react";
+
+const types = ["pawn", "knight", "bishop", "rook", "queen"];
 
 const defineNumbers = (gametype) => {
   const gametypeArray = gametype.split("_");
@@ -18,6 +21,12 @@ const defineNumbers = (gametype) => {
 const Game = () => {
   const { gametype, player1, player2, difficulty } = useParams();
 
+  const [capturesTop, setCapturesTop] = useState([]);
+  const [capturesBottom, setCapturesBottom] = useState([]);
+
+  // console.log("capturesTop", capturesTop);
+  // console.log("capturesBottom", capturesBottom);
+
   const numbers = defineNumbers(gametype);
 
   const color = gametype.split("_")[1];
@@ -32,10 +41,35 @@ const Game = () => {
             ? player2
             : player1}
         </h2>
-        <div className="captures"></div>
+        <div className="captures">
+          {types.map((type) => {
+            const tempTypeList = capturesTop.filter((capture) => {
+              return capture.type === type;
+            });
+            return (
+              <div key={type} id={`topCaptured${type}`}>
+                {tempTypeList.map((piece, idx) => {
+                  return (
+                    <img
+                      key={piece.name}
+                      src={`/${piece.image}`}
+                      alt={piece.name}
+                    />
+                  );
+                })}
+              </div>
+            );
+          })}
+        </div>
       </div>
       <div className="details">
-        <Board numbers={numbers} />
+        <Board
+          numbers={numbers}
+          capturesTop={capturesTop}
+          setCapturesTop={setCapturesTop}
+          capturesBottom={capturesBottom}
+          setCapturesBottom={setCapturesBottom}
+        />
         <div className="history">
           <div>Historial</div>
         </div>
