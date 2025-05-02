@@ -47,10 +47,19 @@ const Game = () => {
               return capture.type === type;
             });
             return (
-              <div key={type} id={`topCaptured${type}`}>
+              <div
+                key={type}
+                id={`topCaptured${type}`}
+                style={{ width: `calc(2vh * ${tempTypeList.length})` }}
+              >
                 {tempTypeList.map((piece, idx) => {
                   return (
                     <img
+                      style={{
+                        position: "absolute",
+                        bottom: 2,
+                        left: 10 * idx,
+                      }}
                       key={piece.name}
                       src={`/${piece.image}`}
                       alt={piece.name}
@@ -83,9 +92,7 @@ const Game = () => {
               ? player1
               : player2}
           </h2>
-          <div className="captures">
-            <p>Capturas</p>
-          </div>
+          <div className="captures"></div>
         </div>
 
         <div className="buttons-game">

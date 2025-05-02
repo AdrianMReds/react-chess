@@ -21,8 +21,23 @@
   align-items: flex-end;
 }
 
+.top h2 {
+  width: calc(var(--tile-size) * 2);
+}
+
 .captures {
   display: flex;
+  width: calc(var(--tile-size) * 6);
+  height: 5vh;
+}
+
+.captures div {
+  position: relative;
+}
+
+.captures div img {
+  height: 5vh;
+  width: 5vh;
 }
 
 .details {
@@ -45,9 +60,12 @@
   gap: 4rem;
 }
 
+.bottom .player-info h2 {
+  width: calc(var(--tile-size) * 2);
+}
+
 .player-info {
   display: flex;
-  gap: 1rem;
   width: calc(var(--tile-size) * 8);
 }
 

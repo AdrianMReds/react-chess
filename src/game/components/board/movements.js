@@ -70,6 +70,16 @@ const getPawnMovements = (piece, x, y, darkOnTop, pieces) => {
         ? { x: x, y: y - 2 }
         : { x: x, y: y + 2 }
     );
+
+    if (
+      getPossibleTakes(
+        pieces,
+        possibleMovements[possibleMovements.length - 1],
+        piece
+      )
+    ) {
+      possibleMovements.pop();
+    }
   }
 
   const possibleTakes = darkOnTop
