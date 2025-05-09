@@ -1,3 +1,50 @@
+const getPieceMovements = (piece, x, y, pieces) => {
+  var possibleMovements = [];
+
+  switch (piece.type) {
+    case "knight":
+      possibleMovements = getKnightMovements(piece, x, y, pieces);
+      break;
+    case "king":
+      possibleMovements = getKingRawMovements(piece, x, y, pieces);
+      break;
+    case "rook":
+      possibleMovements = getRookMovements(piece, x, y, pieces);
+      break;
+    case "bishop":
+      possibleMovements = getBishopMovements(piece, x, y, pieces);
+      break;
+    case "queen":
+      possibleMovements = getQueenMovements(piece, x, y, pieces);
+      break;
+  }
+  console.log(typeof possibleMovements);
+  return possibleMovements;
+};
+
+//Función para obtener movimientos de rey opuesto (Checar jaque)
+const getKingRawMovements = (piece, x, y, pieces) => {
+  var possibleMovements = [
+    { x: x - 1, y: y - 1 },
+    { x: x - 1, y: y },
+    { x: x - 1, y: y + 1 },
+    { x: x, y: y - 1 },
+    { x: x, y: y + 1 },
+    { x: x + 1, y: y - 1 },
+    { x: x + 1, y: y },
+    { x: x + 1, y: y + 1 },
+  ];
+
+  var filteredMovements = possibleMovements.filter((movement) => {
+    return (
+      isInsideBoard(movement.x, movement.y) &&
+      getFriendlyPieceCollision(pieces, movement, piece) === false
+    );
+  });
+
+  return filteredMovements;
+};
+
 const movePiece = (tempPieces, selectedPiece, x, y) => {
   const tempPiece = tempPieces.find((p) => {
     return (
@@ -27,14 +74,27 @@ const getFriendlyPieceCollision = (pieces, movement, piece) => {
 };
 
 const isValidKingMovement = (pieces, movement, piece) => {
-  const { color: kingColor, x: kingX, y: kingY } = piece;
+  const { color: kingColor } = piece;
+  const { x, y } = movement;
 
   const enemyPieces = pieces.filter((p) => p.color !== kingColor);
 
-  const enemyPossibleMovements = [];
-
   //Aquí agregaremos todos los posibles movimientos de las piezas enemigas a la lista enemyPossibleMovements
-  enemyPieces.forEach((enemyPiece) => {});
+  enemyPieces.forEach((enemyPiece) => {
+    if (enemyPiece.type === "pawn") {
+    } else {
+      var enemyPieceMovements = getPieceMovements(
+        enemyPiece,
+        enemyPiece.position.x,
+        enemyPiece.position.y,
+        pieces
+      );
+
+      return !enemyPieceMovements.some((pm) => {
+        return pm.x === x && pm.y === y;
+      });
+    }
+  });
 };
 
 const getPossibleTakes = (pieces, movement, piece) => {
@@ -196,8 +256,9 @@ const getKingMovements = (piece, x, y, pieces) => {
       : movement;
   });
 
+  // Filtramos movimientos que no pongan al rey en jaque
   filteredMovements.forEach((movement) => {
-    isValidKingMovement(pieces, movement, piece);
+    console.log(isValidKingMovement(pieces, movement, piece));
   });
 
   return filteredMovements;
