@@ -7,7 +7,6 @@ const types = ["pawn", "knight", "bishop", "rook", "queen"];
 
 const defineNumbers = (gametype) => {
   const gametypeArray = gametype.split("_");
-  console.log(gametypeArray);
 
   if (gametypeArray[0] === "ai") {
     if (gametypeArray[1] === "white") {
@@ -46,11 +45,22 @@ const Game = () => {
             const tempTypeList = capturesTop.filter((capture) => {
               return capture.type === type;
             });
+            // Si hay al menos una pieza -> 5vh + 10px por cada pieza extra
+            var extraWidth = 0;
+
+            if (tempTypeList.length > 1) {
+              extraWidth += 10 * (tempTypeList.length - 1);
+            }
+
             return (
               <div
                 key={type}
                 id={`topCaptured${type}`}
-                style={{ width: `calc(2vh * ${tempTypeList.length})` }}
+                style={{
+                  width: tempTypeList.length
+                    ? `calc(5vh + ${extraWidth}px)`
+                    : undefined,
+                }}
               >
                 {tempTypeList.map((piece, idx) => {
                   return (
@@ -92,7 +102,46 @@ const Game = () => {
               ? player1
               : player2}
           </h2>
-          <div className="captures"></div>
+          <div className="captures">
+            {types.map((type) => {
+              const tempTypeList = capturesBottom.filter((capture) => {
+                return capture.type === type;
+              });
+              // Si hay al menos una pieza -> 5vh + 10px por cada pieza extra
+              var extraWidth = 0;
+
+              if (tempTypeList.length > 1) {
+                extraWidth += 10 * (tempTypeList.length - 1);
+              }
+
+              return (
+                <div
+                  key={type}
+                  id={`bottomCaptured${type}`}
+                  style={{
+                    width: tempTypeList.length
+                      ? `calc(5vh + ${extraWidth}px)`
+                      : undefined,
+                  }}
+                >
+                  {tempTypeList.map((piece, idx) => {
+                    return (
+                      <img
+                        style={{
+                          position: "absolute",
+                          bottom: 2,
+                          left: 10 * idx,
+                        }}
+                        key={piece.name}
+                        src={`/${piece.image}`}
+                        alt={piece.name}
+                      />
+                    );
+                  })}
+                </div>
+              );
+            })}
+          </div>
         </div>
 
         <div className="buttons-game">

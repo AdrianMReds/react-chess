@@ -26,6 +26,17 @@ const getFriendlyPieceCollision = (pieces, movement, piece) => {
   });
 };
 
+const isValidKingMovement = (pieces, movement, piece) => {
+  const { color: kingColor, x: kingX, y: kingY } = piece;
+
+  const enemyPieces = pieces.filter((p) => p.color !== kingColor);
+
+  const enemyPossibleMovements = [];
+
+  //Aquí agregaremos todos los posibles movimientos de las piezas enemigas a la lista enemyPossibleMovements
+  enemyPieces.forEach((enemyPiece) => {});
+};
+
 const getPossibleTakes = (pieces, movement, piece) => {
   const response = pieces.some((p) => {
     return (
@@ -151,6 +162,14 @@ const getKnightMovements = (piece, x, y, pieces) => {
   return filteredMovements;
 };
 
+/*
+- Lógica de Jaque/JaqueMate
+1. Que el rey no se pueda mover a casillas en jaque
+2. Que ninguna pieza (a menos que sea para bloquear) se pueda mover a excepción del rey si el rey está en jaque
+  2.1 Revisar después de cada turno si hay jaque
+3. Jaque mate, si no hay movimientos posibles pues se acabo
+*/
+
 // TODO: Quitar movimientos de jaque
 const getKingMovements = (piece, x, y, pieces) => {
   var possibleMovements = [
@@ -175,6 +194,10 @@ const getKingMovements = (piece, x, y, pieces) => {
     return getPossibleTakes(pieces, movement, piece)
       ? { ...movement, isTake: true }
       : movement;
+  });
+
+  filteredMovements.forEach((movement) => {
+    isValidKingMovement(pieces, movement, piece);
   });
 
   return filteredMovements;
