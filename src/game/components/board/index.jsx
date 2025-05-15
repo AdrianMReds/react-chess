@@ -112,7 +112,7 @@ const Board = ({
         possibleMovements = getKnightMovements(piece, x, y, pieces);
         break;
       case "king":
-        possibleMovements = getKingMovements(piece, x, y, pieces);
+        possibleMovements = getKingMovements(piece, x, y, pieces, darkOnTop);
         break;
       case "rook":
         possibleMovements = getRookMovements(piece, x, y, pieces);
