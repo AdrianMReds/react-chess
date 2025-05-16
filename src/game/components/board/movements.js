@@ -33,7 +33,7 @@ const getPieceMovements = (piece, x, y, pieces, darkOnTop) => {
       possibleMovements = getRookMovements(piece, x, y, pieces);
       break;
     case "bishop":
-      possibleMovements = getBishopMovements(piece, x, y, pieces);
+      possibleMovements = getBishopMovements(piece, x, y, pieces, darkOnTop);
       break;
     case "queen":
       possibleMovements = getQueenMovements(piece, x, y, pieces);
@@ -94,7 +94,7 @@ const getFriendlyPieceCollision = (pieces, movement, piece) => {
 };
 
 //Está función ya funciona como "isKingOnCheck" para revisar si un rey está en jaque antes y después de mover pieza
-const isValidKingMovement = (pieces, movement, piece, darkOnTop) => {
+const isKingOnCheck = (pieces, movement, piece, darkOnTop) => {
   const { color: kingColor } = piece;
   const { x, y } = movement;
 
@@ -250,6 +250,8 @@ const getKnightMovements = (piece, x, y, pieces) => {
 };
 
 /*
+Checar que el movimiento no ponga en jaque al rey A (al dar click en una pieza) -> Hacemos movimiento de pieza A (al dar click en un possibleMovement) -> checamos que Rey B no esté en jaque (después de mover la pieza)
+
 - Lógica de Jaque/JaqueMate
 1. Que el rey no se pueda mover a casillas en jaque
 x. Que una pieza que bloquea un jaque no se pueda mover a movimientos inválidos.
@@ -285,7 +287,7 @@ const getKingMovements = (piece, x, y, pieces, darkOnTop) => {
   });
 
   var filteredMovements = filteredMovements.filter((movement) => {
-    return isValidKingMovement(pieces, movement, piece, darkOnTop);
+    return isKingOnCheck(pieces, movement, piece, darkOnTop);
   });
 
   return filteredMovements;
@@ -333,7 +335,14 @@ const getRookMovements = (piece, x, y, pieces) => {
   return possibleMovements;
 };
 
-const getBishopMovements = (piece, x, y, pieces) => {
+const getBishopMovements = (
+  piece,
+  x,
+  y,
+  pieces,
+  darkOnTop,
+  fromBoard = false
+) => {
   var possibleMovements = [];
 
   const directions = [
@@ -371,6 +380,23 @@ const getBishopMovements = (piece, x, y, pieces) => {
       }
     }
   });
+
+  // Checar que movimientos no pongan en jaque
+
+  if (fromBoard) {
+    //Por cada movimiento (loop) -> simular movimiento de pieza -> extraer el rey del mismo color -> revisar que con ese movimiento hecho el rey no esté en jaque
+    const tempKing = pieces.find((p) => {
+      return p.type === "king" && p.color === piece.color;
+    });
+
+    possibleMovements = possibleMovements.filter((movement) => {
+      // const tempPieces = movePiece([...pieces], piece, movement.x, movement.y);
+
+      // return !isKingOnCheck(tempPieces, tempKing.position, tempKing, darkOnTop);
+      return true;
+    });
+    console.log("bishop movements", possibleMovements);
+  }
 
   return possibleMovements;
 };
