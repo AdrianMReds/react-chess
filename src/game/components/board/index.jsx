@@ -115,7 +115,14 @@ const Board = ({
         possibleMovements = getKingMovements(piece, x, y, pieces, darkOnTop);
         break;
       case "rook":
-        possibleMovements = getRookMovements(piece, x, y, pieces);
+        possibleMovements = getRookMovements(
+          piece,
+          x,
+          y,
+          pieces,
+          darkOnTop,
+          true
+        );
         break;
       case "bishop":
         possibleMovements = getBishopMovements(
@@ -134,8 +141,6 @@ const Board = ({
 
     setPosiblePieceMovements(possibleMovements);
   };
-
-  console.log("PIECES!", pieces);
 
   return (
     <div className="board">

@@ -65,13 +65,23 @@ const getKingRawMovements = (piece, x, y, pieces) => {
   return filteredMovements;
 };
 
-const movePiece = (tempPieces, selectedPiece, x, y) => {
+const movePiece = (tempPieces, selectedPiece, x, y, isTake = false) => {
   const tempPiece = tempPieces.find((p) => {
     return (
       p.position.x === selectedPiece.position.x &&
       p.position.y === selectedPiece.position.y
     );
   });
+
+  if (isTake) {
+    const tempRemovedPiece = tempPieces.find((piece) => {
+      return piece.position.x === x && piece.position.y === y;
+    });
+
+    const tempRemovedPieceIndex = tempPieces.indexOf(tempRemovedPiece);
+
+    tempPieces.splice(tempRemovedPieceIndex, 1);
+  }
 
   const pieceIndex = tempPieces.indexOf(tempPiece);
 
@@ -109,8 +119,6 @@ const isKingOnCheck = (pieces, movement, piece, darkOnTop) => {
       pieces,
       darkOnTop
     );
-
-    // console.log(`Moves de ${enemyPiece.name}: ${enemyPieceMovements}`);
 
     if (
       enemyPieceMovements.length &&
@@ -293,7 +301,14 @@ const getKingMovements = (piece, x, y, pieces, darkOnTop) => {
   return filteredMovements;
 };
 
-const getRookMovements = (piece, x, y, pieces) => {
+const getRookMovements = (
+  piece,
+  x,
+  y,
+  pieces,
+  darkOnTop,
+  fromBoard = false
+) => {
   var possibleMovements = [];
 
   const directions = [
@@ -331,6 +346,29 @@ const getRookMovements = (piece, x, y, pieces) => {
       }
     }
   });
+
+  if (fromBoard) {
+    //Por cada movimiento (loop) -> simular movimiento de pieza -> extraer el rey del mismo color -> revisar que con ese movimiento hecho el rey no esté en jaque
+    const tempKing = pieces.find((p) => {
+      return p.type === "king" && p.color === piece.color;
+    });
+
+    console.log("incluye possible Take??", possibleMovements);
+
+    possibleMovements = possibleMovements.filter((movement) => {
+      var tempPieces = JSON.parse(JSON.stringify(pieces));
+
+      tempPieces = movePiece(
+        tempPieces,
+        piece,
+        movement.x,
+        movement.y,
+        movement.isTake
+      );
+
+      return isKingOnCheck(tempPieces, tempKing.position, tempKing, darkOnTop);
+    });
+  }
 
   return possibleMovements;
 };
@@ -389,11 +427,20 @@ const getBishopMovements = (
       return p.type === "king" && p.color === piece.color;
     });
 
-    possibleMovements = possibleMovements.filter((movement) => {
-      // const tempPieces = movePiece([...pieces], piece, movement.x, movement.y);
+    console.log("incluye possible Take??", possibleMovements);
 
-      // return !isKingOnCheck(tempPieces, tempKing.position, tempKing, darkOnTop);
-      return true;
+    possibleMovements = possibleMovements.filter((movement) => {
+      var tempPieces = JSON.parse(JSON.stringify(pieces));
+
+      tempPieces = movePiece(
+        tempPieces,
+        piece,
+        movement.x,
+        movement.y,
+        movement.isTake
+      );
+
+      return isKingOnCheck(tempPieces, tempKing.position, tempKing, darkOnTop);
     });
     console.log("bishop movements", possibleMovements);
   }
