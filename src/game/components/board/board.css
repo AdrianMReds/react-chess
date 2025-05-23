@@ -28,6 +28,10 @@
   background-color: rgba(251, 254, 32, 0.5);
 }
 
+.tile.king-on-check {
+  background-color: rgba(254, 65, 32, 0.5);
+}
+
 .tile img {
   width: calc(var(--tile-size) * 0.8);
   height: calc(var(--tile-size) * 0.8);

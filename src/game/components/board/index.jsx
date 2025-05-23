@@ -1,5 +1,5 @@
 import "./board.css";
-import { useState } from "react";
+import { use, useState } from "react";
 
 import { defineInitialPositions } from "../../../constants";
 import {
@@ -10,6 +10,7 @@ import {
   getBishopMovements,
   getQueenMovements,
   movePiece,
+  isKingOnCheck,
 } from "./movements";
 
 const Board = ({
@@ -28,6 +29,9 @@ const Board = ({
   const [pieces, setPieces] = useState(defineInitialPositions(numbers));
   const [possiblePieceMovements, setPosiblePieceMovements] = useState([]);
   const [selectedPiece, setSelectedPiece] = useState(null);
+
+  const [lightKingOnCheck, setLightKingOnCheck] = useState(false);
+  const [darkKingOnCheck, setDarkKingOnCheck] = useState(false);
 
   const getTileClassname = (x, y, hasPiece) => {
     let classname = "tile";
@@ -49,6 +53,29 @@ const Board = ({
         ? " selected-piece"
         : "";
 
+    if (lightKingOnCheck || darkKingOnCheck) {
+      const lightKing = pieces.find((p) => {
+        return p.type === "king" && p.color === "light";
+      });
+      const darkKing = pieces.find((p) => {
+        return p.type === "king" && p.color === "dark";
+      });
+
+      classname +=
+        lightKingOnCheck &&
+        lightKing.position.x === x &&
+        lightKing.position.y === y
+          ? " king-on-check"
+          : "";
+
+      classname +=
+        darkKingOnCheck &&
+        darkKing.position.x === x &&
+        darkKing.position.y === y
+          ? " king-on-check"
+          : "";
+    }
+
     return classname;
   };
 
@@ -65,6 +92,30 @@ const Board = ({
 
         setPieces(tempPieces);
         setPosiblePieceMovements([]);
+
+        //Revisar si el rey contrario quedó en jaque
+        const tempKing = pieces.find((p) => {
+          return p.type === "king" && p.color !== selectedPiece.color;
+        });
+
+        const kingOnCheck = !isKingOnCheck(
+          pieces,
+          tempKing.position,
+          tempKing,
+          darkOnTop
+        );
+
+        if (kingOnCheck) {
+          if (tempKing.color === "light") {
+            setLightKingOnCheck(true);
+          } else {
+            setDarkKingOnCheck(true);
+          }
+        } else {
+          setLightKingOnCheck(false);
+          setDarkKingOnCheck(false);
+        }
+
         setSelectedPiece(null);
       }
       return;
@@ -106,10 +157,24 @@ const Board = ({
 
     switch (piece.type) {
       case "pawn":
-        possibleMovements = getPawnMovements(piece, x, y, darkOnTop, pieces);
+        possibleMovements = getPawnMovements(
+          piece,
+          x,
+          y,
+          darkOnTop,
+          pieces,
+          true
+        );
         break;
       case "knight":
-        possibleMovements = getKnightMovements(piece, x, y, pieces);
+        possibleMovements = getKnightMovements(
+          piece,
+          x,
+          y,
+          pieces,
+          darkOnTop,
+          true
+        );
         break;
       case "king":
         possibleMovements = getKingMovements(piece, x, y, pieces, darkOnTop);
@@ -135,7 +200,14 @@ const Board = ({
         );
         break;
       case "queen":
-        possibleMovements = getQueenMovements(piece, x, y, pieces);
+        possibleMovements = getQueenMovements(
+          piece,
+          x,
+          y,
+          pieces,
+          darkOnTop,
+          true
+        );
         break;
     }
 
