@@ -325,7 +325,14 @@ x. Que una pieza que bloquea un jaque no se pueda mover a movimientos inválidos
 */
 
 // TODO: Quitar movimientos de jaque
-const getKingMovements = (piece, x, y, pieces, darkOnTop) => {
+const getKingMovements = (
+  piece,
+  x,
+  y,
+  pieces,
+  darkOnTop,
+  fromBoard = false
+) => {
   var possibleMovements = [
     { x: x - 1, y: y - 1 },
     { x: x - 1, y: y },
@@ -350,9 +357,39 @@ const getKingMovements = (piece, x, y, pieces, darkOnTop) => {
       : movement;
   });
 
-  var filteredMovements = filteredMovements.filter((movement) => {
-    return isKingOnCheck(pieces, movement, piece, darkOnTop);
-  });
+  // var filteredMovements = filteredMovements.filter((movement) => {
+  //   return isKingOnCheck(pieces, movement, piece, darkOnTop);
+  // });
+
+  if (fromBoard) {
+    //Por cada movimiento (loop) -> simular movimiento de pieza -> extraer el rey del mismo color -> revisar que con ese movimiento hecho el rey no esté en jaque
+    const tempKing = pieces.find((p) => {
+      return p.type === "king" && p.color === piece.color;
+    });
+
+    console.log("filtered moves", filteredMovements);
+
+    filteredMovements = filteredMovements.filter((movement) => {
+      var tempPieces = JSON.parse(JSON.stringify(pieces));
+
+      tempPieces = movePiece(
+        tempPieces,
+        piece,
+        movement.x,
+        movement.y,
+        movement.isTake
+      );
+
+      return isKingOnCheck(
+        tempPieces,
+        { x: movement.x, y: movement.y },
+        tempKing,
+        darkOnTop
+      );
+    });
+  }
+
+  console.log(filteredMovements);
 
   return filteredMovements;
 };
