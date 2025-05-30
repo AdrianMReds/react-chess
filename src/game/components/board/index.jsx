@@ -11,6 +11,7 @@ import {
   getQueenMovements,
   movePiece,
   isKingOnCheck,
+  getPieceMovements,
 } from "./movements";
 
 const Board = ({
@@ -32,6 +33,10 @@ const Board = ({
 
   const [lightKingOnCheck, setLightKingOnCheck] = useState(false);
   const [darkKingOnCheck, setDarkKingOnCheck] = useState(false);
+
+  const [checkMate, setCheckMate] = useState(false);
+  const [staleMate, setStaleMate] = useState(false);
+  const [winner, setWinner] = useState("");
 
   const getTileClassname = (x, y, hasPiece) => {
     let classname = "tile";
@@ -116,8 +121,41 @@ const Board = ({
           setDarkKingOnCheck(false);
         }
 
-        //Revisar si hay jaque mate
+        //Revisar si hay jaque mate o "stalemate"
         //Checar si hay algún movimiento de todas las piezas "amigas" del rey en jaque
+
+        const friendlyPieces = tempPieces.filter(
+          (p) => p.color === tempKing.color
+        );
+
+        var noMovesLeft = true;
+
+        for (var i = 0; i < friendlyPieces.length; i++) {
+          var friendlyPiece = friendlyPieces[i];
+
+          var friendlyPieceMovements = getPieceMovements(
+            friendlyPiece,
+            friendlyPiece.position.x,
+            friendlyPiece.position.y,
+            tempPieces,
+            darkOnTop,
+            true
+          );
+
+          if (friendlyPieceMovements.length) {
+            noMovesLeft = false;
+            break;
+          }
+        }
+
+        if (noMovesLeft) {
+          if (kingOnCheck) {
+            setCheckMate(true);
+            setWinner(tempKing.color === "light" ? "dark" : "light");
+          } else {
+            setStaleMate(true);
+          }
+        }
 
         setSelectedPiece(null);
       }
@@ -173,8 +211,41 @@ const Board = ({
         setDarkKingOnCheck(false);
       }
 
-      //Revisar si hay jaque mate
+      //Revisar si hay jaque mate o "stalemate"
       //Checar si hay algún movimiento de todas las piezas "amigas" del rey en jaque
+
+      const friendlyPieces = tempPieces.filter(
+        (p) => p.color === tempKing.color
+      );
+
+      var noMovesLeft = true;
+
+      for (var i = 0; i < friendlyPieces.length; i++) {
+        var friendlyPiece = friendlyPieces[i];
+
+        var friendlyPieceMovements = getPieceMovements(
+          friendlyPiece,
+          friendlyPiece.position.x,
+          friendlyPiece.position.y,
+          tempPieces,
+          darkOnTop,
+          true
+        );
+
+        if (friendlyPieceMovements.length) {
+          noMovesLeft = false;
+          break;
+        }
+      }
+
+      if (noMovesLeft) {
+        if (kingOnCheck) {
+          setCheckMate(true);
+          setWinner(tempKing.color === "light" ? "dark" : "light");
+        } else {
+          setStaleMate(true);
+        }
+      }
 
       setSelectedPiece(null);
 
@@ -250,6 +321,10 @@ const Board = ({
 
     setPosiblePieceMovements(possibleMovements);
   };
+
+  console.log("Checkmate", checkMate);
+  console.log("Stalemate", staleMate);
+  console.log("Winner", winner);
 
   return (
     <div className="board">

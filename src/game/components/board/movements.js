@@ -1,9 +1,18 @@
-const getPieceMovements = (piece, x, y, pieces, darkOnTop) => {
+const getPieceMovements = (
+  piece,
+  x,
+  y,
+  pieces,
+  darkOnTop,
+  fromBoard = false
+) => {
   var possibleMovements = [];
 
   switch (piece.type) {
     case "pawn":
-      possibleMovements = darkOnTop
+      possibleMovements = fromBoard
+        ? getPawnMovements(piece, x, y, darkOnTop, pieces, fromBoard)
+        : darkOnTop
         ? piece.color === "dark"
           ? [
               { x: x - 1, y: y + 1 },
@@ -24,19 +33,49 @@ const getPieceMovements = (piece, x, y, pieces, darkOnTop) => {
           ];
       break;
     case "knight":
-      possibleMovements = getKnightMovements(piece, x, y, pieces);
+      possibleMovements = getKnightMovements(
+        piece,
+        x,
+        y,
+        pieces,
+        darkOnTop,
+        fromBoard
+      );
       break;
     case "king":
-      possibleMovements = getKingRawMovements(piece, x, y, pieces);
+      possibleMovements = fromBoard
+        ? getKingMovements(piece, x, y, pieces, darkOnTop, fromBoard)
+        : getKingRawMovements(piece, x, y, pieces);
       break;
     case "rook":
-      possibleMovements = getRookMovements(piece, x, y, pieces);
+      possibleMovements = getRookMovements(
+        piece,
+        x,
+        y,
+        pieces,
+        darkOnTop,
+        fromBoard
+      );
       break;
     case "bishop":
-      possibleMovements = getBishopMovements(piece, x, y, pieces, darkOnTop);
+      possibleMovements = getBishopMovements(
+        piece,
+        x,
+        y,
+        pieces,
+        darkOnTop,
+        fromBoard
+      );
       break;
     case "queen":
-      possibleMovements = getQueenMovements(piece, x, y, pieces);
+      possibleMovements = getQueenMovements(
+        piece,
+        x,
+        y,
+        pieces,
+        darkOnTop,
+        fromBoard
+      );
       break;
   }
   return possibleMovements;
@@ -357,17 +396,11 @@ const getKingMovements = (
       : movement;
   });
 
-  // var filteredMovements = filteredMovements.filter((movement) => {
-  //   return isKingOnCheck(pieces, movement, piece, darkOnTop);
-  // });
-
   if (fromBoard) {
     //Por cada movimiento (loop) -> simular movimiento de pieza -> extraer el rey del mismo color -> revisar que con ese movimiento hecho el rey no esté en jaque
     const tempKing = pieces.find((p) => {
       return p.type === "king" && p.color === piece.color;
     });
-
-    console.log("filtered moves", filteredMovements);
 
     filteredMovements = filteredMovements.filter((movement) => {
       var tempPieces = JSON.parse(JSON.stringify(pieces));
@@ -388,8 +421,6 @@ const getKingMovements = (
       );
     });
   }
-
-  console.log(filteredMovements);
 
   return filteredMovements;
 };
@@ -561,4 +592,5 @@ export {
   getQueenMovements,
   movePiece,
   isKingOnCheck,
+  getPieceMovements,
 };
