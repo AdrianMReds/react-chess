@@ -2,6 +2,7 @@ import "./game.css";
 import { useParams } from "react-router-dom";
 import Board from "./components/board";
 import { useState } from "react";
+import EndgameModal from "./components/endgameModal";
 
 const types = ["pawn", "knight", "bishop", "rook", "queen"];
 
@@ -23,8 +24,9 @@ const Game = () => {
   const [capturesTop, setCapturesTop] = useState([]);
   const [capturesBottom, setCapturesBottom] = useState([]);
 
-  // console.log("capturesTop", capturesTop);
-  // console.log("capturesBottom", capturesBottom);
+  const [checkMate, setCheckMate] = useState(false);
+  const [staleMate, setStaleMate] = useState(false);
+  const [winner, setWinner] = useState("");
 
   const numbers = defineNumbers(gametype);
 
@@ -88,9 +90,24 @@ const Game = () => {
           setCapturesTop={setCapturesTop}
           capturesBottom={capturesBottom}
           setCapturesBottom={setCapturesBottom}
+          checkMate={checkMate}
+          setCheckMate={setCheckMate}
+          staleMate={staleMate}
+          setStaleMate={setStaleMate}
+          winner={winner}
+          setWinner={setWinner}
         />
         <div className="history">
           <div>Historial</div>
+          {(checkMate || staleMate) && (
+            <EndgameModal
+              checkMate={checkMate}
+              winner={winner}
+              numbers={numbers}
+              player1={player1}
+              player2={player2}
+            />
+          )}
         </div>
       </div>
       <div className="bottom">

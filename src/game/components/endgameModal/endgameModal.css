@@ -1,0 +1,20 @@
+:root {
+  --board-green: #779557;
+}
+
+.modal {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+  width: 70%;
+  height: 50%;
+  background-color: var(--board-green);
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 10px;
+}

@@ -49,6 +49,7 @@
 }
 
 .history {
+  position: relative;
   border: solid 1px var(--board-white);
   width: calc(var(--tile-size) * 8);
 }

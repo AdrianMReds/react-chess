@@ -20,6 +20,12 @@ const Board = ({
   setCapturesTop,
   capturesBottom,
   setCapturesBottom,
+  checkMate,
+  setCheckMate,
+  staleMate,
+  setStaleMate,
+  winner,
+  setWinner,
 }) => {
   const darkOnTop = numbers[0] === "8";
 
@@ -33,10 +39,6 @@ const Board = ({
 
   const [lightKingOnCheck, setLightKingOnCheck] = useState(false);
   const [darkKingOnCheck, setDarkKingOnCheck] = useState(false);
-
-  const [checkMate, setCheckMate] = useState(false);
-  const [staleMate, setStaleMate] = useState(false);
-  const [winner, setWinner] = useState("");
 
   const getTileClassname = (x, y, hasPiece) => {
     let classname = "tile";
@@ -91,6 +93,9 @@ const Board = ({
     isPossibleMovement,
     isPossibleTake
   ) => {
+    if (checkMate || staleMate) {
+      return;
+    }
     if (!hasPiece) {
       if (isPossibleMovement) {
         const tempPieces = movePiece([...pieces], selectedPiece, x, y);
@@ -321,10 +326,6 @@ const Board = ({
 
     setPosiblePieceMovements(possibleMovements);
   };
-
-  console.log("Checkmate", checkMate);
-  console.log("Stalemate", staleMate);
-  console.log("Winner", winner);
 
   return (
     <div className="board">
