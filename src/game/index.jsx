@@ -28,14 +28,29 @@ const Game = () => {
   const [staleMate, setStaleMate] = useState(false);
   const [winner, setWinner] = useState("");
 
+  const [turn, setTurn] = useState("light");
+
   const numbers = defineNumbers(gametype);
 
   const color = gametype.split("_")[1];
 
+  const darkOnTop = numbers[0] === "8";
+
   return (
     <div className="game">
       <div className="top">
-        <h2>
+        {/* TODO: Que no salga un turno cuando se acabe el juego */}
+        <h2
+          className={
+            darkOnTop
+              ? turn === "dark"
+                ? "turn"
+                : ""
+              : turn === "light"
+              ? "turn"
+              : ""
+          }
+        >
           {gametype === "two-players"
             ? player2
             : color === "white"
@@ -96,6 +111,8 @@ const Game = () => {
           setStaleMate={setStaleMate}
           winner={winner}
           setWinner={setWinner}
+          turn={turn}
+          setTurn={setTurn}
         />
         <div className="history">
           <div>Historial</div>
@@ -112,7 +129,17 @@ const Game = () => {
       </div>
       <div className="bottom">
         <div className="player-info">
-          <h2>
+          <h2
+            className={
+              turn && darkOnTop
+                ? turn === "dark"
+                  ? ""
+                  : "turn"
+                : turn === "light"
+                ? ""
+                : "turn"
+            }
+          >
             {gametype === "two-players"
               ? player1
               : color === "white"

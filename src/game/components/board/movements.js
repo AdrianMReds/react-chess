@@ -363,7 +363,7 @@ x. Que una pieza que bloquea un jaque no se pueda mover a movimientos inválidos
 3. Jaque mate, si no hay movimientos posibles pues se acabo
 */
 
-// TODO: Quitar movimientos de jaque
+// TODO: Movimiento de enroque
 const getKingMovements = (
   piece,
   x,

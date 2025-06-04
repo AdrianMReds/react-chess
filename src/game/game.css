@@ -23,6 +23,7 @@
 
 .top h2 {
   width: calc(var(--tile-size) * 2);
+  height: 5vh;
 }
 
 .captures {
@@ -61,6 +62,10 @@
   gap: 4rem;
 }
 
+.bottom h2 {
+  height: 5vh;
+}
+
 .bottom .player-info h2 {
   width: calc(var(--tile-size) * 2);
 }
@@ -79,4 +84,8 @@
 .buttons-game button {
   width: 100px;
   height: 40px;
+}
+
+h2.turn {
+  text-decoration: underline;
 }

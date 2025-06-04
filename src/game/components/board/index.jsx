@@ -26,6 +26,8 @@ const Board = ({
   setStaleMate,
   winner,
   setWinner,
+  turn,
+  setTurn,
 }) => {
   const darkOnTop = numbers[0] === "8";
 
@@ -96,6 +98,7 @@ const Board = ({
     if (checkMate || staleMate) {
       return;
     }
+
     if (!hasPiece) {
       if (isPossibleMovement) {
         const tempPieces = movePiece([...pieces], selectedPiece, x, y);
@@ -160,9 +163,16 @@ const Board = ({
           } else {
             setStaleMate(true);
           }
+          setTurn("");
         }
 
         setSelectedPiece(null);
+
+        if (turn === "light") {
+          setTurn("dark");
+        } else {
+          setTurn("light");
+        }
       }
       return;
     }
@@ -250,10 +260,22 @@ const Board = ({
         } else {
           setStaleMate(true);
         }
+        setTurn("");
       }
 
       setSelectedPiece(null);
 
+      if (turn === "light") {
+        setTurn("dark");
+      } else {
+        setTurn("light");
+      }
+
+      return;
+    }
+
+    // Si no es el turno de la pieza
+    if (piece.color !== turn) {
       return;
     }
 
