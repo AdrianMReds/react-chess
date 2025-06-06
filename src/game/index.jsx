@@ -30,6 +30,8 @@ const Game = () => {
 
   const [turn, setTurn] = useState("light");
 
+  const [history, setHistory] = useState([]);
+
   const numbers = defineNumbers(gametype);
 
   const color = gametype.split("_")[1];
@@ -115,7 +117,7 @@ const Game = () => {
           setTurn={setTurn}
         />
         <div className="history">
-          <div>Historial</div>
+          <div>{history}</div>
           {(checkMate || staleMate) && (
             <EndgameModal
               checkMate={checkMate}

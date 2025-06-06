@@ -12,6 +12,7 @@ import {
   movePiece,
   isKingOnCheck,
   getPieceMovements,
+  getMovementsInCommon,
 } from "./movements";
 
 const Board = ({
@@ -100,6 +101,7 @@ const Board = ({
     }
 
     if (!hasPiece) {
+      // POSSIBLE MOVEMENT
       if (isPossibleMovement) {
         const tempPieces = movePiece([...pieces], selectedPiece, x, y);
 
@@ -110,6 +112,28 @@ const Board = ({
         const tempKing = pieces.find((p) => {
           return p.type === "king" && p.color !== selectedPiece.color;
         });
+
+        var pieceCommonMovements = [];
+
+        if (selectedPiece.type === "knight" || selectedPiece.type === "rook") {
+          const commonPiece = pieces.find((p) => {
+            return (
+              p.type === selectedPiece.type &&
+              p.color === selectedPiece.color &&
+              p.name !== selectedPiece.name
+            );
+          });
+
+          if (commonPiece) {
+            pieceCommonMovements = getMovementsInCommon(
+              possiblePieceMovements,
+              commonPiece,
+              pieces,
+              darkOnTop,
+              true
+            );
+          }
+        }
 
         const kingOnCheck = !isKingOnCheck(
           pieces,
@@ -182,6 +206,7 @@ const Board = ({
     });
 
     // Checar si la tile con pieza es un possible movement && isTake===true
+    //POSSIBLE TAKE
     if (isPossibleTake) {
       // Agregamos como captura la pieza clickeada
       darkOnTop

@@ -352,17 +352,6 @@ const getKnightMovements = (
   return filteredMovements;
 };
 
-/*
-Checar que el movimiento no ponga en jaque al rey A (al dar click en una pieza) -> Hacemos movimiento de pieza A (al dar click en un possibleMovement) -> checamos que Rey B no esté en jaque (después de mover la pieza)
-
-- Lógica de Jaque/JaqueMate
-1. Que el rey no se pueda mover a casillas en jaque
-x. Que una pieza que bloquea un jaque no se pueda mover a movimientos inválidos.
-2. Que ninguna pieza (a menos que sea para bloquear) se pueda mover a excepción del rey si el rey está en jaque
-  2.1 Revisar después de cada turno si hay jaque
-3. Jaque mate, si no hay movimientos posibles pues se acabo
-*/
-
 // TODO: Movimiento de enroque
 const getKingMovements = (
   piece,
@@ -583,6 +572,62 @@ const getQueenMovements = (
   return possibleMovements;
 };
 
+/*
+Con torres y caballos:
+- Movimientos que tengan en común antes de hacer el movimiento
+- Si las piezas antes del movimiento tienen en común x o y
+- Si el movimiento que se realizó después fue un movimiento en común
+*/
+
+// TODO: Ver manejo de enroques al generar string de movimiento
+const getMovementString = (piece, pieces, x, y, isTake, isKingOnCheck) => {
+  if (piece.type === "knight" || piece.type === "rook") {
+  } else {
+  }
+};
+
+const getMovementsInCommon = (
+  piece1Movements,
+  piece2,
+  pieces,
+  darkOnTop,
+  fromBoard
+) => {
+  //Sacar movimientos de piece2 []
+  const piece2Movements =
+    piece2.type === "knight"
+      ? getKnightMovements(
+          piece2,
+          piece2.position.x,
+          piece2.position.y,
+          pieces,
+          darkOnTop,
+          fromBoard
+        )
+      : getRookMovements(
+          piece2,
+          piece2.position.x,
+          piece2.position.y,
+          pieces,
+          darkOnTop,
+          fromBoard
+        );
+
+  console.log(piece1Movements);
+  console.log(piece2Movements);
+
+  //Necesitamos obtener los movimientos en común
+  const commonMovements = piece1Movements.filter((movement) => {
+    return piece2Movements.some((movement2) => {
+      return movement2.x === movement.x && movement2.y === movement.y;
+    });
+  });
+
+  //Regresar la lista filtrada
+  console.log("commonMovements", commonMovements);
+  return commonMovements;
+};
+
 export {
   getPawnMovements,
   getKnightMovements,
@@ -593,4 +638,6 @@ export {
   movePiece,
   isKingOnCheck,
   getPieceMovements,
+  getMovementString,
+  getMovementsInCommon,
 };
