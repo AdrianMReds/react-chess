@@ -580,10 +580,89 @@ Con torres y caballos:
 */
 
 // TODO: Ver manejo de enroques al generar string de movimiento
-const getMovementString = (piece, pieces, x, y, isTake, isKingOnCheck) => {
-  if (piece.type === "knight" || piece.type === "rook") {
+const getMovementString = (
+  piece,
+  pieces,
+  x,
+  y,
+  isTake,
+  isKingOnCheck,
+  isCommon,
+  lastCoordinates,
+  darkOnTop
+) => {
+  const typeLetter = {
+    rook: "R",
+    knight: "N",
+    king: "K",
+    queen: "Q",
+    bishop: "B",
+  };
+
+  const xvalues = {
+    0: "a",
+    1: "b",
+    2: "c",
+    3: "d",
+    4: "e",
+    5: "f",
+    6: "g",
+    7: "h",
+  };
+
+  // Letra mayuscula ->  isCommon? -> es take? (caso peon) -> letra (x) -> número (y) -> isKingOnCheck
+
+  var movementString = "";
+  if (piece.type === "pawn") {
+    if (isTake) {
+      movementString += darkOnTop
+        ? xvalues[lastCoordinates.x]
+        : xvalues[7 - lastCoordinates.x];
+      movementString += "x";
+    }
+
+    movementString += darkOnTop ? xvalues[x] : xvalues[7 - x];
+    movementString += darkOnTop ? `${8 - y}` : `${y + 1}`;
+
+    if (isKingOnCheck) {
+      movementString += "+";
+    }
   } else {
+    movementString += typeLetter[piece.type];
+
+    if (isCommon) {
+      const commonPiece = pieces.find((p) => {
+        return (
+          p.type === piece.type &&
+          p.color === piece.color &&
+          p.name !== piece.name
+        );
+      });
+
+      //Comparar lastCoordinates y coordenadas de commonPiece
+      //Si la x es igual usamos la y(numero), si la y es igual usamos la x(letra). Si ninguno es igual usamos la x(letra).
+      if (lastCoordinates.x === commonPiece.position.x) {
+        movementString += darkOnTop
+          ? `${8 - lastCoordinates.y}`
+          : `${lastCoordinates.y + 1}`; // Se agrega el número
+      } else {
+        movementString += darkOnTop
+          ? xvalues[lastCoordinates.x]
+          : xvalues[7 - lastCoordinates.x]; // Se agrega la letra
+      }
+    }
+
+    if (isTake) {
+      movementString += "x";
+    }
+    movementString += darkOnTop ? xvalues[x] : xvalues[7 - x];
+    movementString += darkOnTop ? `${8 - y}` : `${y + 1}`;
+
+    if (isKingOnCheck) {
+      movementString += "+";
+    }
   }
+  return movementString;
 };
 
 const getMovementsInCommon = (
@@ -613,9 +692,6 @@ const getMovementsInCommon = (
           fromBoard
         );
 
-  console.log(piece1Movements);
-  console.log(piece2Movements);
-
   //Necesitamos obtener los movimientos en común
   const commonMovements = piece1Movements.filter((movement) => {
     return piece2Movements.some((movement2) => {
@@ -624,7 +700,6 @@ const getMovementsInCommon = (
   });
 
   //Regresar la lista filtrada
-  console.log("commonMovements", commonMovements);
   return commonMovements;
 };
 

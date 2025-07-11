@@ -53,6 +53,25 @@
   position: relative;
   border: solid 1px var(--board-white);
   width: calc(var(--tile-size) * 8);
+  overflow-y: auto;
+}
+
+.history h2 {
+  text-align: center;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.row div {
+  width: 30%;
+}
+
+.row.light {
+  background-color: #4f4f4f;
 }
 
 .bottom {

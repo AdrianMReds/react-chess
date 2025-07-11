@@ -25,4 +25,15 @@ Lo que seguiría después sería ahora si con todas los parámetros en la funci�
 
 - Historial -> **Estamos aquí**
 - LocalStorage (o SessiónStorage)
+
+  - Leer si hay datos guardados
+
+  - Guardado automático
+
+    - ¿En qué momento guardamos? (Después de movimiento?)
+    - ¿Qué vamos a guardar? (pieces, el historial, los nombres, la configuración)
+
+  - Borrado automático
+    - ¿En qué momento borramos? (Cuando se acaba el juego o si el jugador reinicia le juego)
+
 - Implementación de IA

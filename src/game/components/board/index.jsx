@@ -1,5 +1,5 @@
 import "./board.css";
-import { use, useState } from "react";
+import { useState, useEffect } from "react";
 
 import { defineInitialPositions } from "../../../constants";
 import {
@@ -13,6 +13,7 @@ import {
   isKingOnCheck,
   getPieceMovements,
   getMovementsInCommon,
+  getMovementString,
 } from "./movements";
 
 const Board = ({
@@ -29,6 +30,8 @@ const Board = ({
   setWinner,
   turn,
   setTurn,
+  history,
+  setHistory,
 }) => {
   const darkOnTop = numbers[0] === "8";
 
@@ -39,9 +42,30 @@ const Board = ({
   const [pieces, setPieces] = useState(defineInitialPositions(numbers));
   const [possiblePieceMovements, setPosiblePieceMovements] = useState([]);
   const [selectedPiece, setSelectedPiece] = useState(null);
+  const [lastCoordinates, setLastCoordinates] = useState({});
 
   const [lightKingOnCheck, setLightKingOnCheck] = useState(false);
   const [darkKingOnCheck, setDarkKingOnCheck] = useState(false);
+
+  useEffect(() => {
+    if (selectedPiece) {
+      var x = selectedPiece.position.x;
+      var y = selectedPiece.position.y;
+      setLastCoordinates({ x, y });
+    }
+  }, [selectedPiece]);
+
+  const getNewHistory = (piece, movementString) => {
+    var tempHistory = [...history];
+
+    if (piece.color === "light") {
+      tempHistory.push({ light: movementString });
+    } else {
+      tempHistory[tempHistory.length - 1].dark = movementString; //-> {*}
+    }
+
+    return tempHistory;
+  };
 
   const getTileClassname = (x, y, hasPiece) => {
     let classname = "tile";
@@ -101,18 +125,8 @@ const Board = ({
     }
 
     if (!hasPiece) {
-      // POSSIBLE MOVEMENT
+      // POSSIBLE MOVEMENT -------------------
       if (isPossibleMovement) {
-        const tempPieces = movePiece([...pieces], selectedPiece, x, y);
-
-        setPieces(tempPieces);
-        setPosiblePieceMovements([]);
-
-        //Revisar si el rey contrario quedó en jaque
-        const tempKing = pieces.find((p) => {
-          return p.type === "king" && p.color !== selectedPiece.color;
-        });
-
         var pieceCommonMovements = [];
 
         if (selectedPiece.type === "knight" || selectedPiece.type === "rook") {
@@ -135,6 +149,26 @@ const Board = ({
           }
         }
 
+        var isCommon = false;
+
+        if (
+          pieceCommonMovements.some((movement) => {
+            return movement.x === x && movement.y === y;
+          })
+        ) {
+          isCommon = true;
+        }
+
+        const tempPieces = movePiece([...pieces], selectedPiece, x, y);
+
+        setPieces(tempPieces);
+        setPosiblePieceMovements([]);
+
+        //Revisar si el rey contrario quedó en jaque
+        const tempKing = pieces.find((p) => {
+          return p.type === "king" && p.color !== selectedPiece.color;
+        });
+
         const kingOnCheck = !isKingOnCheck(
           pieces,
           tempKing.position,
@@ -152,6 +186,23 @@ const Board = ({
           setLightKingOnCheck(false);
           setDarkKingOnCheck(false);
         }
+
+        const movementString = getMovementString(
+          selectedPiece,
+          pieces,
+          x,
+          y,
+          isPossibleTake,
+          kingOnCheck,
+          isCommon,
+          lastCoordinates,
+          darkOnTop
+        );
+
+        //Si se movió uno blanco creamos un objeto en el arreglo
+        //Si se movió uno negro agregamos el movimiento al objeto
+        const newHistory = getNewHistory(selectedPiece, movementString);
+        setHistory(newHistory);
 
         //Revisar si hay jaque mate o "stalemate"
         //Checar si hay algún movimiento de todas las piezas "amigas" del rey en jaque
@@ -206,8 +257,40 @@ const Board = ({
     });
 
     // Checar si la tile con pieza es un possible movement && isTake===true
-    //POSSIBLE TAKE
+    //POSSIBLE TAKE ----------
     if (isPossibleTake) {
+      var pieceCommonMovements = [];
+
+      if (selectedPiece.type === "knight" || selectedPiece.type === "rook") {
+        const commonPiece = pieces.find((p) => {
+          return (
+            p.type === selectedPiece.type &&
+            p.color === selectedPiece.color &&
+            p.name !== selectedPiece.name
+          );
+        });
+
+        if (commonPiece) {
+          pieceCommonMovements = getMovementsInCommon(
+            possiblePieceMovements,
+            commonPiece,
+            pieces,
+            darkOnTop,
+            true
+          );
+        }
+      }
+
+      var isCommon = false;
+
+      if (
+        pieceCommonMovements.some((movement) => {
+          return movement.x === x && movement.y === y;
+        })
+      ) {
+        isCommon = true;
+      }
+
       // Agregamos como captura la pieza clickeada
       darkOnTop
         ? piece.color === "dark"
@@ -250,6 +333,23 @@ const Board = ({
         setLightKingOnCheck(false);
         setDarkKingOnCheck(false);
       }
+
+      const movementString = getMovementString(
+        selectedPiece,
+        pieces,
+        x,
+        y,
+        isPossibleTake,
+        kingOnCheck,
+        isCommon,
+        lastCoordinates,
+        darkOnTop
+      );
+
+      //Si se movió uno blanco creamos un objeto en el arreglo
+      //Si se movió uno negro agregamos el movimiento al objeto
+      const newHistory = getNewHistory(selectedPiece, movementString);
+      setHistory(newHistory);
 
       //Revisar si hay jaque mate o "stalemate"
       //Checar si hay algún movimiento de todas las piezas "amigas" del rey en jaque
@@ -394,15 +494,15 @@ const Board = ({
             <div
               key={`p${x}${y}`}
               className={getTileClassname(x, y, hasPiece)}
-              onClick={() =>
+              onClick={() => {
                 handlePieceClick(
                   x,
                   y,
                   hasPiece,
                   isPossibleMovement,
                   isPossibleTake
-                )
-              }
+                );
+              }}
             >
               {x === 0 && <span className="num-span">{number}</span>}
               {y === 7 && <span className="letter-span">{letter}</span>}
