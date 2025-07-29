@@ -67,6 +67,16 @@ const Board = ({
     return tempHistory;
   };
 
+  const getLastMovement = () => {
+    if (!history.length) {
+      return "";
+    }
+
+    const lastTurn = history[history.length - 1];
+
+    return lastTurn.dark ? lastTurn.dark : lastTurn.light;
+  };
+
   const getTileClassname = (x, y, hasPiece) => {
     let classname = "tile";
 
@@ -160,6 +170,35 @@ const Board = ({
         }
 
         const tempPieces = movePiece([...pieces], selectedPiece, x, y);
+
+        // EN PASANT
+        if (isPossibleTake) {
+          var removedPiece = {};
+
+          // Si la pieza va hacia arriba
+          if (
+            (darkOnTop && selectedPiece.color === "light") ||
+            (!darkOnTop && selectedPiece.color === "dark")
+          ) {
+            removedPiece = pieces.find((p) => {
+              return p.position.x === x && p.position.y === y + 1;
+            });
+          }
+
+          //Si la pieza va hacia abajo
+          if (
+            (!darkOnTop && selectedPiece.color === "light") ||
+            (darkOnTop && selectedPiece.color === "dark")
+          ) {
+            removedPiece = pieces.find((p) => {
+              return p.position.x === x && p.position.y === y - 1;
+            });
+          }
+
+          const tempPieceIndex = tempPieces.indexOf(removedPiece);
+
+          tempPieces.splice(tempPieceIndex, 1);
+        }
 
         setPieces(tempPieces);
         setPosiblePieceMovements([]);
@@ -416,7 +455,8 @@ const Board = ({
           y,
           darkOnTop,
           pieces,
-          true
+          true,
+          getLastMovement()
         );
         break;
       case "knight":

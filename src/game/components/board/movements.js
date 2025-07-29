@@ -119,7 +119,9 @@ const movePiece = (tempPieces, selectedPiece, x, y, isTake = false) => {
 
     const tempRemovedPieceIndex = tempPieces.indexOf(tempRemovedPiece);
 
-    tempPieces.splice(tempRemovedPieceIndex, 1);
+    if (tempRemovedPiece) {
+      tempPieces.splice(tempRemovedPieceIndex, 1);
+    }
   }
 
   const pieceIndex = tempPieces.indexOf(tempPiece);
@@ -186,6 +188,64 @@ const isInsideBoard = (x, y) => {
   return x >= 0 && y >= 0 && x <= 7 && y <= 7;
 };
 
+const checkEnPasant = (pieces, piece, lastx, lasty) => {
+  //Checar pieza izquierda
+  const leftPiece = pieces.find((p) => {
+    return (
+      p.position.x === piece.position.x - 1 &&
+      p.position.y === piece.position.y &&
+      p.type === "pawn" &&
+      p.color !== piece.color
+    );
+  });
+
+  const rightPiece = pieces.find((p) => {
+    return (
+      p.position.x === piece.position.x + 1 &&
+      p.position.y === piece.position.y &&
+      p.type === "pawn" &&
+      p.color !== piece.color
+    );
+  });
+
+  if (leftPiece) {
+    //Checar si ese peón fue el último movimiento
+
+    //Comparar esas coordenadas de lastMovement con las coords de leftPiece, si son iguales en pasant es posible
+
+    if (
+      lastx !== undefined &&
+      lasty !== NaN &&
+      lastx === leftPiece.position.x &&
+      lasty === leftPiece.position.y
+    ) {
+      return true;
+    }
+
+    //Hay que quitar la pieza enemiga de donde está aunque no se haya atacado directamente
+  }
+
+  //Checar pieza derecha
+  if (rightPiece) {
+    //Checar si ese peón fue el último movimiento
+
+    //Comparar esas coordenadas de lastMovement con las coords de rightPiece, si son iguales en pasant es posible
+
+    if (
+      lastx !== undefined &&
+      lasty !== NaN &&
+      lastx === rightPiece.position.x &&
+      lasty === rightPiece.position.y
+    ) {
+      return true;
+    }
+
+    //Hay que quitar la pieza enemiga de donde está aunque no se haya atacado directamente
+  }
+
+  return false;
+};
+
 // TODO: Movimiento en pasant
 const getPawnMovements = (
   piece,
@@ -193,7 +253,8 @@ const getPawnMovements = (
   y,
   darkOnTop,
   pieces,
-  fromBoard = false
+  fromBoard = false,
+  lastMovement
 ) => {
   var possibleMovements = darkOnTop
     ? piece.color === "dark"
@@ -271,6 +332,82 @@ const getPawnMovements = (
       filteredMovements.push({ ...take, isTake: true });
     }
   });
+
+  const darkxvalues = {
+    a: 0,
+    b: 1,
+    c: 2,
+    d: 3,
+    e: 4,
+    f: 5,
+    g: 6,
+    h: 7,
+  };
+
+  const xvalues = {
+    a: 7,
+    b: 6,
+    c: 5,
+    d: 4,
+    e: 3,
+    f: 2,
+    g: 1,
+    h: 0,
+  };
+
+  const lastx = darkOnTop
+    ? darkxvalues[lastMovement[0]]
+    : xvalues[lastMovement[0]];
+
+  var lasty = lastMovement[1];
+  lasty = parseInt(lasty);
+
+  lasty = lasty ? (darkOnTop ? 8 - lasty : lasty - 1) : lasty;
+
+  //Revisar posible en pasant
+  if (y === 3) {
+    if (darkOnTop && piece.color === "light") {
+      if (checkEnPasant(pieces, piece, lastx, lasty)) {
+        filteredMovements.push({
+          x: lastx,
+          y: lasty - 1,
+          isTake: true,
+        });
+      }
+    }
+
+    if (!darkOnTop && piece.color === "dark") {
+      if (checkEnPasant(pieces, piece, lastx, lasty)) {
+        filteredMovements.push({
+          x: lastx,
+          y: lasty - 1,
+          isTake: true,
+        });
+      }
+    }
+  }
+
+  if (y === 4) {
+    if (!darkOnTop && piece.color === "light") {
+      if (checkEnPasant(pieces, piece, lastx, lasty)) {
+        filteredMovements.push({
+          x: lastx,
+          y: lasty + 1,
+          isTake: true,
+        });
+      }
+    }
+
+    if (darkOnTop && piece.color === "dark") {
+      if (checkEnPasant(pieces, piece, lastx, lasty)) {
+        filteredMovements.push({
+          x: lastx,
+          y: lasty + 1,
+          isTake: true,
+        });
+      }
+    }
+  }
 
   if (fromBoard) {
     //Por cada movimiento (loop) -> simular movimiento de pieza -> extraer el rey del mismo color -> revisar que con ese movimiento hecho el rey no esté en jaque

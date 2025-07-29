@@ -42,6 +42,7 @@ const Game = () => {
     <div className="game">
       <div className="top">
         {/* TODO: Que no salga un turno cuando se acabe el juego */}
+        {/* TODO: Cuando seleccionamos ser las negras el nombre se pone arriba */}
         <h2
           className={
             darkOnTop
