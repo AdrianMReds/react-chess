@@ -128,7 +128,8 @@ const Board = ({
     y,
     hasPiece,
     isPossibleMovement,
-    isPossibleTake
+    isPossibleTake,
+    isCastle
   ) => {
     if (checkMate || staleMate) {
       return;
@@ -169,7 +170,49 @@ const Board = ({
           isCommon = true;
         }
 
-        const tempPieces = movePiece([...pieces], selectedPiece, x, y);
+        var tempPieces = movePiece([...pieces], selectedPiece, x, y);
+
+        //ENROQUE
+        //Revisar si se mueve a la derecha son 3 y a la izquierda son 2
+        //Revisar generación de string de movimiento
+        var castleDirection;
+        if (isCastle) {
+          //A la derecha
+          if (lastCoordinates.x < x) {
+            const rookToMove = pieces.find((p) => {
+              return (
+                p.color === selectedPiece.color &&
+                p.type === "rook" &&
+                p.position.x === 7 &&
+                p.position.y === selectedPiece.position.y
+              );
+            });
+            tempPieces = movePiece(
+              [...pieces],
+              rookToMove,
+              5,
+              rookToMove.position.y
+            );
+            castleDirection = "short";
+          } else {
+            //A la izquierda
+            const rookToMove = pieces.find((p) => {
+              return (
+                p.color === selectedPiece.color &&
+                p.type === "rook" &&
+                p.position.x === 0 &&
+                p.position.y === selectedPiece.position.y
+              );
+            });
+            tempPieces = movePiece(
+              [...pieces],
+              rookToMove,
+              3,
+              rookToMove.position.y
+            );
+            castleDirection = "long";
+          }
+        }
 
         // EN PASANT
         if (isPossibleTake) {
@@ -226,17 +269,23 @@ const Board = ({
           setDarkKingOnCheck(false);
         }
 
-        const movementString = getMovementString(
-          selectedPiece,
-          pieces,
-          x,
-          y,
-          isPossibleTake,
-          kingOnCheck,
-          isCommon,
-          lastCoordinates,
-          darkOnTop
-        );
+        var movementString;
+
+        if (isCastle) {
+          movementString = castleDirection === "short" ? "O-O" : "O-O-O";
+        } else {
+          movementString = getMovementString(
+            selectedPiece,
+            pieces,
+            x,
+            y,
+            isPossibleTake,
+            kingOnCheck,
+            isCommon,
+            lastCoordinates,
+            darkOnTop
+          );
+        }
 
         //Si se movió uno blanco creamos un objeto en el arreglo
         //Si se movió uno negro agregamos el movimiento al objeto
@@ -530,6 +579,11 @@ const Board = ({
             return movement.x === x && movement.y === y && movement.isTake;
           });
 
+          //Definir isCastle
+          const isCastle = possiblePieceMovements.some((movement) => {
+            return movement.x === x && movement.y === y && movement.isCastle;
+          });
+
           return (
             <div
               key={`p${x}${y}`}
@@ -540,7 +594,8 @@ const Board = ({
                   y,
                   hasPiece,
                   isPossibleMovement,
-                  isPossibleTake
+                  isPossibleTake,
+                  isCastle
                 );
               }}
             >
