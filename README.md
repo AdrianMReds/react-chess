@@ -23,17 +23,19 @@ Lo que seguiría después sería ahora si con todas los parámetros en la funci�
 
 ### Pasos generales:
 
-- Historial -> **Estamos aquí**
-- LocalStorage (o SessiónStorage)
+- LocalStorage (o SessiónStorage) **Estamos aquí**
 
-  - Leer si hay datos guardados
+  - Leer si hay datos guardados (cuando cargue la página de board) -> useEffect
 
-  - Guardado automático
+    - Si hay cargar la partida
 
-    - ¿En qué momento guardamos? (Después de movimiento?)
+  - Guardado automático **Ya quedó**
+
+    - ¿En qué momento guardamos? (Después de movimiento?) -> handlePieceClick
     - ¿Qué vamos a guardar? (pieces, el historial, los nombres, la configuración)
 
   - Borrado automático
     - ¿En qué momento borramos? (Cuando se acaba el juego o si el jugador reinicia le juego)
 
+- Conversión de peones
 - Implementación de IA

@@ -1,7 +1,6 @@
 import "./board.css";
 import { useState, useEffect } from "react";
 
-import { defineInitialPositions } from "../../../constants";
 import {
   getPawnMovements,
   getKnightMovements,
@@ -17,6 +16,8 @@ import {
 } from "./movements";
 
 const Board = ({
+  pieces,
+  setPieces,
   numbers,
   capturesTop,
   setCapturesTop,
@@ -32,6 +33,7 @@ const Board = ({
   setTurn,
   history,
   setHistory,
+  saveGame,
 }) => {
   const darkOnTop = numbers[0] === "8";
 
@@ -39,7 +41,6 @@ const Board = ({
     ? ["a", "b", "c", "d", "e", "f", "g", "h"]
     : ["h", "g", "f", "e", "d", "c", "b", "a"];
 
-  const [pieces, setPieces] = useState(defineInitialPositions(numbers));
   const [possiblePieceMovements, setPosiblePieceMovements] = useState([]);
   const [selectedPiece, setSelectedPiece] = useState(null);
   const [lastCoordinates, setLastCoordinates] = useState({});
@@ -336,6 +337,7 @@ const Board = ({
         } else {
           setTurn("light");
         }
+        saveGame(tempPieces, newHistory, capturesBottom, capturesTop);
       }
       return;
     }
@@ -484,6 +486,31 @@ const Board = ({
         setTurn("light");
       }
 
+      var newCapturesBottom = darkOnTop
+        ? piece.color === "dark"
+          ? [...capturesBottom, piece]
+          : capturesBottom
+        : piece.color === "dark"
+        ? capturesBottom
+        : [...capturesBottom, piece];
+
+      var newCapturesTop = darkOnTop
+        ? piece.color === "dark"
+          ? capturesTop
+          : [...capturesTop, piece]
+        : piece.color === "dark"
+        ? [...capturesTop, piece]
+        : capturesTop;
+
+      darkOnTop
+        ? piece.color === "dark"
+          ? setCapturesBottom([...capturesBottom, piece])
+          : setCapturesTop([...capturesTop, piece])
+        : piece.color === "dark"
+        ? setCapturesTop([...capturesTop, piece])
+        : setCapturesBottom([...capturesBottom, piece]);
+
+      saveGame(tempPieces, newHistory, newCapturesBottom, newCapturesTop);
       return;
     }
 

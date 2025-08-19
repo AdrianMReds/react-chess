@@ -1,8 +1,9 @@
 import "./game.css";
 import { useParams } from "react-router-dom";
 import Board from "./components/board";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import EndgameModal from "./components/endgameModal";
+import { defineInitialPositions } from "../constants";
 
 const types = ["pawn", "knight", "bishop", "rook", "queen"];
 
@@ -21,6 +22,9 @@ const defineNumbers = (gametype) => {
 const Game = () => {
   const { gametype, player1, player2, difficulty } = useParams();
 
+  const [pieces, setPieces] = useState(
+    defineInitialPositions(defineNumbers(gametype))
+  );
   const [capturesTop, setCapturesTop] = useState([]);
   const [capturesBottom, setCapturesBottom] = useState([]);
 
@@ -37,6 +41,50 @@ const Game = () => {
   const color = gametype.split("_")[1];
 
   const darkOnTop = numbers[0] === "8";
+
+  const saveGame = (pieces, newHistory, newCapturesBottom, newCapturesTop) => {
+    console.log("Guardando partida...");
+    /*
+    Keys:
+    "ai_<color>", "two-players_<color>"
+  */
+
+    console.log("turn in save", turn);
+    const gameConfiguration = {
+      pieces: pieces,
+      history: newHistory,
+      player1: player1,
+      player2: player2,
+      capturesTop: newCapturesTop,
+      capturesBottom: newCapturesBottom,
+      gametype: gametype,
+      difficulty: difficulty,
+      turn: turn === "light" ? "dark" : "light",
+      isNew: false,
+    };
+
+    localStorage.setItem(gametype, JSON.stringify(gameConfiguration));
+  };
+
+  useEffect(() => {
+    const actualConfiguration = JSON.parse(localStorage.getItem(gametype));
+
+    console.log("useEffect", actualConfiguration);
+
+    //Asignar todo a como está la configuración
+    setHistory(actualConfiguration.history);
+    setCapturesTop(actualConfiguration.capturesTop);
+    setCapturesBottom(actualConfiguration.capturesBottom);
+    setTurn(actualConfiguration.turn);
+    setPieces(actualConfiguration.pieces);
+
+    //REINICIO TEMPORAL
+    // setHistory([]);
+    // setCapturesTop([]);
+    // setCapturesBottom([]);
+    // setTurn("light");
+    // setPieces(defineInitialPositions(defineNumbers(gametype)));
+  }, []);
 
   return (
     <div className="game">
@@ -103,6 +151,8 @@ const Game = () => {
       </div>
       <div className="details">
         <Board
+          pieces={pieces}
+          setPieces={setPieces}
           numbers={numbers}
           capturesTop={capturesTop}
           setCapturesTop={setCapturesTop}
@@ -118,6 +168,7 @@ const Game = () => {
           setTurn={setTurn}
           history={history}
           setHistory={setHistory}
+          saveGame={saveGame}
         />
         <div className="history">
           <div>
