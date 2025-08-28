@@ -4,14 +4,23 @@ const getPieceMovements = (
   y,
   pieces,
   darkOnTop,
-  fromBoard = false
+  fromBoard = false,
+  lastMovement = ""
 ) => {
   var possibleMovements = [];
 
   switch (piece.type) {
     case "pawn":
       possibleMovements = fromBoard
-        ? getPawnMovements(piece, x, y, darkOnTop, pieces, fromBoard)
+        ? getPawnMovements(
+            piece,
+            x,
+            y,
+            darkOnTop,
+            pieces,
+            fromBoard,
+            lastMovement
+          )
         : darkOnTop
         ? piece.color === "dark"
           ? [

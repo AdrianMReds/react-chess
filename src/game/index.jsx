@@ -22,11 +22,11 @@ const defineNumbers = (gametype) => {
 const Game = () => {
   const { gametype, player1, player2, difficulty } = useParams();
 
-  const [pieces, setPieces] = useState(
-    defineInitialPositions(defineNumbers(gametype))
-  );
+  const [pieces, setPieces] = useState([]);
   const [capturesTop, setCapturesTop] = useState([]);
   const [capturesBottom, setCapturesBottom] = useState([]);
+  const [lightKingOnCheck, setLightKingOnCheck] = useState(false);
+  const [darkKingOnCheck, setDarkKingOnCheck] = useState(false);
 
   const [checkMate, setCheckMate] = useState(false);
   const [staleMate, setStaleMate] = useState(false);
@@ -42,14 +42,19 @@ const Game = () => {
 
   const darkOnTop = numbers[0] === "8";
 
-  const saveGame = (pieces, newHistory, newCapturesBottom, newCapturesTop) => {
-    console.log("Guardando partida...");
+  const saveGame = (
+    pieces,
+    newHistory,
+    newCapturesBottom,
+    newCapturesTop,
+    lightKingOnCheck,
+    darkKingOnCheck
+  ) => {
     /*
     Keys:
     "ai_<color>", "two-players_<color>"
   */
 
-    console.log("turn in save", turn);
     const gameConfiguration = {
       pieces: pieces,
       history: newHistory,
@@ -61,6 +66,8 @@ const Game = () => {
       difficulty: difficulty,
       turn: turn === "light" ? "dark" : "light",
       isNew: false,
+      lightKingOnCheck: lightKingOnCheck,
+      darkKingOnCheck: darkKingOnCheck,
     };
 
     localStorage.setItem(gametype, JSON.stringify(gameConfiguration));
@@ -69,21 +76,14 @@ const Game = () => {
   useEffect(() => {
     const actualConfiguration = JSON.parse(localStorage.getItem(gametype));
 
-    console.log("useEffect", actualConfiguration);
-
     //Asignar todo a como está la configuración
     setHistory(actualConfiguration.history);
     setCapturesTop(actualConfiguration.capturesTop);
     setCapturesBottom(actualConfiguration.capturesBottom);
     setTurn(actualConfiguration.turn);
     setPieces(actualConfiguration.pieces);
-
-    //REINICIO TEMPORAL
-    // setHistory([]);
-    // setCapturesTop([]);
-    // setCapturesBottom([]);
-    // setTurn("light");
-    // setPieces(defineInitialPositions(defineNumbers(gametype)));
+    setLightKingOnCheck(actualConfiguration.lightKingOnCheck);
+    setDarkKingOnCheck(actualConfiguration.darkKingOnCheck);
   }, []);
 
   return (
@@ -169,6 +169,10 @@ const Game = () => {
           history={history}
           setHistory={setHistory}
           saveGame={saveGame}
+          lightKingOnCheck={lightKingOnCheck}
+          setLightKingOnCheck={setLightKingOnCheck}
+          darkKingOnCheck={darkKingOnCheck}
+          setDarkKingOnCheck={setDarkKingOnCheck}
         />
         <div className="history">
           <div>
@@ -264,3 +268,5 @@ const Game = () => {
 };
 
 export default Game;
+
+export { defineNumbers };

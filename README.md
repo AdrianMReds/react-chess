@@ -29,13 +29,18 @@ Lo que seguiría después sería ahora si con todas los parámetros en la funci�
 
     - Si hay cargar la partida
 
-  - Guardado automático **Ya quedó**
+  - Guardado automático
 
     - ¿En qué momento guardamos? (Después de movimiento?) -> handlePieceClick
     - ¿Qué vamos a guardar? (pieces, el historial, los nombres, la configuración)
 
-  - Borrado automático
+  - Borrado automático **Estamos aquí**
+
     - ¿En qué momento borramos? (Cuando se acaba el juego o si el jugador reinicia le juego)
+
+    - Checar cuando se queda en jaque el rey si lo recargamos no se pone rojo
+
+    - Cuando se termine un juego hay que borrar la memoria
 
 - Conversión de peones
 - Implementación de IA
