@@ -263,8 +263,6 @@ const Board = ({
           darkOnTop
         );
 
-        console.log(kingOnCheck);
-
         if (kingOnCheck) {
           if (tempKing.color === "light") {
             setLightKingOnCheck(true);
@@ -331,11 +329,18 @@ const Board = ({
           }
         }
 
+        var tempCheckmate = false;
+        var tempStalemate = false;
+        var tempWinner = "";
+
         if (noMovesLeft) {
           if (kingOnCheck) {
+            tempCheckmate = true;
+            tempWinner = tempKing.color === "light" ? "dark" : "light";
             setCheckMate(true);
             setWinner(tempKing.color === "light" ? "dark" : "light");
           } else {
+            tempStalemate = true;
             setStaleMate(true);
           }
           setTurn("");
@@ -355,7 +360,10 @@ const Board = ({
           capturesBottom,
           capturesTop,
           tempLightCheck,
-          tempDarkCheck
+          tempDarkCheck,
+          tempCheckmate,
+          tempStalemate,
+          tempWinner
         );
       }
       return;
@@ -366,7 +374,7 @@ const Board = ({
     });
 
     // Checar si la tile con pieza es un possible movement && isTake===true
-    //POSSIBLE TAKE ----------
+    //POSSIBLE TAKE ---------------------------------
     if (isPossibleTake) {
       var pieceCommonMovements = [];
 
@@ -494,11 +502,18 @@ const Board = ({
         }
       }
 
+      var tempCheckmate = false;
+      var tempStalemate = false;
+      var tempWinner = "";
+
       if (noMovesLeft) {
         if (kingOnCheck) {
+          tempCheckmate = true;
+          tempWinner = tempKing.color === "light" ? "dark" : "light";
           setCheckMate(true);
           setWinner(tempKing.color === "light" ? "dark" : "light");
         } else {
+          tempStalemate = true;
           setStaleMate(true);
         }
         setTurn("");
@@ -542,7 +557,10 @@ const Board = ({
         newCapturesBottom,
         newCapturesTop,
         tempLightCheck,
-        tempDarkCheck
+        tempDarkCheck,
+        tempCheckmate,
+        tempStalemate,
+        tempWinner
       );
       return;
     }

@@ -48,7 +48,10 @@ const Game = () => {
     newCapturesBottom,
     newCapturesTop,
     lightKingOnCheck,
-    darkKingOnCheck
+    darkKingOnCheck,
+    tempCheckmate,
+    tempStalemate,
+    tempWinner
   ) => {
     /*
     Keys:
@@ -68,6 +71,9 @@ const Game = () => {
       isNew: false,
       lightKingOnCheck: lightKingOnCheck,
       darkKingOnCheck: darkKingOnCheck,
+      checkmate: tempCheckmate,
+      stalemate: tempStalemate,
+      winner: tempWinner,
     };
 
     localStorage.setItem(gametype, JSON.stringify(gameConfiguration));
@@ -84,6 +90,9 @@ const Game = () => {
     setPieces(actualConfiguration.pieces);
     setLightKingOnCheck(actualConfiguration.lightKingOnCheck);
     setDarkKingOnCheck(actualConfiguration.darkKingOnCheck);
+    setCheckMate(actualConfiguration.checkmate);
+    setStaleMate(actualConfiguration.stalemate);
+    setWinner(actualConfiguration.winner);
   }, []);
 
   return (

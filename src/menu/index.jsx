@@ -38,6 +38,9 @@ const Menu = () => {
       isNew: true,
       lightKingOnCheck: false,
       darkKingOnCheck: false,
+      checkmate: false,
+      stalemate: false,
+      winner: "",
     };
 
     localStorage.setItem(

@@ -18,3 +18,10 @@
   transform: translate(-50%, -50%);
   border-radius: 10px;
 }
+
+.modal button {
+  padding: 1rem;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+}

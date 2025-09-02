@@ -23,7 +23,7 @@ Lo que seguiría después sería ahora si con todas los parámetros en la funci�
 
 ### Pasos generales:
 
-- LocalStorage (o SessiónStorage) **Estamos aquí**
+- LocalStorage (o SessiónStorage)
 
   - Leer si hay datos guardados (cuando cargue la página de board) -> useEffect
 
@@ -34,7 +34,7 @@ Lo que seguiría después sería ahora si con todas los parámetros en la funci�
     - ¿En qué momento guardamos? (Después de movimiento?) -> handlePieceClick
     - ¿Qué vamos a guardar? (pieces, el historial, los nombres, la configuración)
 
-  - Borrado automático **Estamos aquí**
+  - Borrado automático
 
     - ¿En qué momento borramos? (Cuando se acaba el juego o si el jugador reinicia le juego)
 
@@ -42,5 +42,10 @@ Lo que seguiría después sería ahora si con todas los parámetros en la funci�
 
     - Cuando se termine un juego hay que borrar la memoria
 
-- Conversión de peones
+- Conversión de peones **Estamos aquí**
+
+  - Al dar click en el posible movimiento o take que se abra un modal con las opciones de pieza
+    - No queremos ejecutar el movimiento hasta dar click en la pieza
+    - Queremos que se pueda cerrar el modal en caso de arrepentirse y se cierra que siga el turno normal.
+
 - Implementación de IA
