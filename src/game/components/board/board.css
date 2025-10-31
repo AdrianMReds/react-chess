@@ -7,6 +7,7 @@
 /* BOARD */
 
 .board {
+  position: relative;
   display: grid;
   grid-template-columns: repeat(8, var(--tile-size));
   grid-template-rows: repeat(8, var(--tile-size));
@@ -51,6 +52,14 @@
   width: calc(var(--tile-size) * 0.3);
   height: calc(var(--tile-size) * 0.3);
   background-color: rgba(0, 0, 0, 0.5);
+  border-radius: 50%;
+}
+
+.take-icon {
+  position: absolute;
+  width: calc(var(--tile-size) * 0.9);
+  height: calc(var(--tile-size) * 0.9);
+  border: 5px solid rgba(0, 0, 0, 0.5);
   border-radius: 50%;
 }
 

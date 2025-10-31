@@ -45,7 +45,10 @@ Lo que seguiría después sería ahora si con todas los parámetros en la funci�
 - Conversión de peones **Estamos aquí**
 
   - Al dar click en el posible movimiento o take que se abra un modal con las opciones de pieza
+
     - No queremos ejecutar el movimiento hasta dar click en la pieza
     - Queremos que se pueda cerrar el modal en caso de arrepentirse y se cierra que siga el turno normal.
+
+  - Considerar generación de string
 
 - Implementación de IA

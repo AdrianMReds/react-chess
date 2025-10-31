@@ -497,8 +497,6 @@ const getKnightMovements = (
   return filteredMovements;
 };
 
-// TODO: Movimiento de enroque
-
 /*
 Reglas de enroque:
 1. Que no se haya movido ni el rey ni la torre
@@ -876,7 +874,6 @@ Con torres y caballos:
 - Si el movimiento que se realizó después fue un movimiento en común
 */
 
-// TODO: Ver manejo de enroques al generar string de movimiento
 const getMovementString = (
   piece,
   pieces,
@@ -886,7 +883,8 @@ const getMovementString = (
   isKingOnCheck,
   isCommon,
   lastCoordinates,
-  darkOnTop
+  darkOnTop,
+  conversionType = ""
 ) => {
   const typeLetter = {
     rook: "R",
@@ -958,6 +956,9 @@ const getMovementString = (
     if (isKingOnCheck) {
       movementString += "+";
     }
+  }
+  if (conversionType) {
+    movementString += `=${typeLetter[conversionType]}`;
   }
   return movementString;
 };

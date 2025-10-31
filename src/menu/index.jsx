@@ -164,7 +164,7 @@ const Menu = () => {
           </>
         )}
 
-        {configuration.isNew ? (
+        {!configuration || configuration?.isNew ? (
           <Button className="play-btn" onClick={() => handlePlay(true)}>
             Jugar
           </Button>

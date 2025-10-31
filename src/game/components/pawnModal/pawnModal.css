@@ -1,0 +1,60 @@
+:root {
+  --tile-size: calc(80vh / 8);
+}
+
+.pawn-modal {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-around;
+  background-color: rgb(222, 222, 222);
+  color: rgb(222, 222, 222);
+  position: absolute;
+  width: var(--tile-size);
+  height: calc(var(--tile-size) * 4);
+}
+
+.square {
+  width: calc(var(--tile-size) * 0.8);
+  height: calc(var(--tile-size) * 0.8);
+  background-repeat: no-repeat;
+  background-size: cover;
+  cursor: pointer;
+}
+
+.square:hover {
+  background-color: rgb(203, 203, 203);
+  color: rgb(203, 203, 203);
+}
+
+.light-queen {
+  background-image: url("/ql.png");
+}
+
+.dark-queen {
+  background-image: url("/qd.png");
+}
+
+.light-rook {
+  background-image: url("/rl.png");
+}
+
+.dark-rook {
+  background-image: url("/rd.png");
+}
+
+.light-bishop {
+  background-image: url("/bl.png");
+}
+
+.dark-bishop {
+  background-image: url("/bd.png");
+}
+
+.light-knight {
+  background-image: url("/nl.png");
+}
+
+.dark-knight {
+  background-image: url("/nd.png");
+}
