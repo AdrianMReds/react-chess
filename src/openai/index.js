@@ -1,4 +1,5 @@
 import axios from "axios";
+import { system_prompts } from "./prompts";
 
 // //Instancia de axios
 const api = axios.create({
@@ -9,16 +10,35 @@ const api = axios.create({
   },
 });
 
-const run = async () => {
-  try {
-    const response = await api.post("/responses", {
-      model: "o4-mini",
-      input: "Dame un chiste sobre ajedrez",
-    });
-    console.log("OpenAI Response:", response.data);
-  } catch (error) {
-    console.error("Error fetching from OpenAI:", error);
+const createSystemPrompt = (difficulty, turn, regenerate, lastGeneratedMovement) => {
+  if(regenerate){
+
+  }else{
+    return `${system_prompts[difficulty]}\n- Juegas como: ${turn}`;
   }
 };
 
-export { run };
+const createMovement = async (difficulty, history, turn, regenerate, lastGeneratedMovement) => {
+  try {
+    const response = await api.post("/responses", {
+      model: "o4-mini",
+      input: regenerate ? `Cometiste un error la última vez, el movimiento ${lastGeneratedMovement.movimiento} que diste no es válido, ya que la pieza ${lastGeneratedMovement.pieza} no puede ir ahí desde su posición actual \n\n ${JSON.stringify(history)}` : JSON.stringify(history), //Historial de movimientos
+      instructions: `${system_prompts[difficulty]}\n- Juegas como: ${turn}`,
+    });
+
+    for (const element of response.data.output) {
+      if (element.type === "message") {
+        return JSON.parse(element.content[0].text);
+      }
+    }
+
+    // Checar si el movimiento es legal
+  } catch (error) {
+    //Error de la API
+    console.error("Error creating movement:", error);
+    // ¿Qué loógica implementamos si falla la API?
+    return null;
+  }
+};
+
+export { createMovement };

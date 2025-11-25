@@ -38,6 +38,8 @@ const Game = () => {
 
   const numbers = defineNumbers(gametype);
 
+  const gametypeName = gametype.split("_")[0];
+
   const color = gametype.split("_")[1];
 
   const darkOnTop = numbers[0] === "8";
@@ -81,6 +83,14 @@ const Game = () => {
 
   useEffect(() => {
     const actualConfiguration = JSON.parse(localStorage.getItem(gametype));
+
+    if (
+      actualConfiguration.gametype === "ai" &&
+      actualConfiguration.isNew &&
+      color === "black"
+    ) {
+      // Empieza la IA
+    }
 
     //Asignar todo a como está la configuración
     setHistory(actualConfiguration.history);
@@ -182,6 +192,9 @@ const Game = () => {
           setLightKingOnCheck={setLightKingOnCheck}
           darkKingOnCheck={darkKingOnCheck}
           setDarkKingOnCheck={setDarkKingOnCheck}
+          gametypeName={gametypeName}
+          color={color === "white" ? "light" : "dark"}
+          difficulty={difficulty}
         />
         <div className="history">
           <div>

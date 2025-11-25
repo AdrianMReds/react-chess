@@ -8,7 +8,8 @@ const getPieceMovements = (
   lastMovement = ""
 ) => {
   var possibleMovements = [];
-
+  console.log("Getting movements for piece:", piece, "at position:", x, y);
+  console.log(piece.type);
   switch (piece.type) {
     case "pawn":
       possibleMovements = fromBoard
@@ -272,6 +273,8 @@ const getPawnMovements = (
     ? [{ x: x, y: y - 1 }]
     : [{ x: x, y: y + 1 }];
 
+    console.log("Possible Movements primera iteracion:", possibleMovements);
+
   // Usamos getPossibleTakes para ver si hay una pieza enemiga y quitar el movimiento
   if (getPossibleTakes(pieces, possibleMovements[0], piece)) {
     possibleMovements.pop();
@@ -291,6 +294,8 @@ const getPawnMovements = (
         ? { x: x, y: y - 2 }
         : { x: x, y: y + 2 }
     );
+
+    console.log("Possible Movements segunda iteracion:", possibleMovements);
 
     if (
       getPossibleTakes(
@@ -1001,6 +1006,100 @@ const getMovementsInCommon = (
   return commonMovements;
 };
 
+const validateMovement = (pieces, piece, movement, darkOnTop, lastMovement) => {
+  const darkxvalues = {
+    a: 0,
+    b: 1,
+    c: 2,
+    d: 3,
+    e: 4,
+    f: 5,
+    g: 6,
+    h: 7,
+  };
+
+  const xvalues = {
+    a: 7,
+    b: 6,
+    c: 5,
+    d: 4,
+    e: 3,
+    f: 2,
+    g: 1,
+    h: 0,
+  };
+  // piece : d7
+  // movement : d5
+
+  // Pieza -> Coordenadas
+  const pieceX = piece[0];
+  const pieceY = parseInt(piece[1]);
+  const pieceCoords = {
+    x: darkOnTop ? darkxvalues[pieceX] : xvalues[pieceX],
+    y: darkOnTop ? 8 - pieceY : pieceY - 1,
+  };
+
+  console.log("Piece Coords:", pieceCoords);
+  // Movimiento -> Coordenadas
+  const cleanMovement = ["N", "R", "B", "Q", "K", "x", "+", "#"];
+
+	let i = 0;
+	while (movement.length > 2) {
+		movement = movement.replace(cleanMovement[i], "");
+		i++;
+
+		if (i > cleanMovement.length - 1) {
+			movement = movement.slice(1);
+		}
+	}
+
+  const movementX = movement[0];
+  const movementY = parseInt(movement[1]);
+  const movementCoords = {
+    x: darkOnTop ? darkxvalues[movementX] : xvalues[movementX],
+    y: darkOnTop ? 8 - movementY : movementY - 1,
+  };
+
+  console.log("Movement Coords:", movementCoords);
+  // Validar el movimiento con sus coordenadas
+      // Comparar con possibleMovements de la pieza
+
+  const selectedPiece = pieces.find((p)=>{
+    return p.position.x === pieceCoords.x && p.position.y === pieceCoords.y;
+  });
+
+  const possibleMovements = selectedPiece.type === "pawn" ? getPawnMovements(
+    selectedPiece,
+    pieceCoords.x,
+    pieceCoords.y,
+    darkOnTop,
+    pieces,
+    false,
+    lastMovement
+  ) : getPieceMovements(
+    selectedPiece,
+    pieceCoords.x,
+    pieceCoords.y,
+    pieces,
+    darkOnTop,
+    false,
+    lastMovement
+  );
+
+  console.log("Possible Movements:", possibleMovements);
+
+  const checkMovement = possibleMovements.find((pm) => {
+    return pm.x === movementCoords.x && pm.y === movementCoords.y;
+  })
+
+  const isValid = checkMovement ? true : false;
+
+  return {isValid, piece: selectedPiece, movement: movementCoords, isTake: checkMovement ? checkMovement.isTake || false : false};
+  
+  // Estructura del return
+  // {isValid : bool, piece: coords, movement: coords, isTake: bool}
+};
+
 export {
   getPawnMovements,
   getKnightMovements,
@@ -1013,4 +1112,5 @@ export {
   getPieceMovements,
   getMovementString,
   getMovementsInCommon,
+  validateMovement,
 };

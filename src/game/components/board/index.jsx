@@ -13,8 +13,11 @@ import {
   getPieceMovements,
   getMovementsInCommon,
   getMovementString,
+  validateMovement,
 } from "./movements";
 import PawnModal from "../pawnModal";
+
+import { createMovement } from "../../../openai";
 
 const Board = ({
   pieces,
@@ -39,6 +42,9 @@ const Board = ({
   setLightKingOnCheck,
   darkKingOnCheck,
   setDarkKingOnCheck,
+  gametypeName,
+  color,
+  difficulty,
 }) => {
   const darkOnTop = numbers[0] === "8";
 
@@ -352,7 +358,7 @@ const Board = ({
     return classname;
   };
 
-  const handlePieceClick = (
+  const handlePieceClick = async (
     x,
     y,
     hasPiece,
@@ -361,6 +367,10 @@ const Board = ({
     isCastle
   ) => {
     if (checkMate || staleMate) {
+      return;
+    }
+
+    if (gametypeName === "ai" && turn !== color) {
       return;
     }
 
@@ -589,6 +599,7 @@ const Board = ({
           setTurn("light");
         }
 
+        //Save game de possible movement
         saveGame(
           tempPieces,
           newHistory,
@@ -600,6 +611,34 @@ const Board = ({
           tempStalemate,
           tempWinner
         );
+
+        let isValid = false;
+        let regenerate = false;
+        let lastGeneratedMovement;
+        
+        do{
+          const newMovement = await createMovement(
+          difficulty,
+          newHistory,
+          color === "light" ? "dark" : "light",
+          regenerate
+          );
+
+          console.log(newMovement);
+
+          const validation = validateMovement(
+            pieces,
+            newMovement.pieza,
+            newMovement.movimiento,
+            darkOnTop,
+            getLastMovement()
+          );
+
+          isValid = validation.isValid;
+          regenerate = true;
+          lastGeneratedMovement = newMovement;
+        }while(!isValid)
+        
       }
       return;
     }
@@ -785,6 +824,7 @@ const Board = ({
         ? [...capturesTop, piece]
         : capturesTop;
 
+      //Save game de possible take
       saveGame(
         tempPieces,
         newHistory,
@@ -900,7 +940,7 @@ const Board = ({
             <div
               key={`p${x}${y}`}
               className={getTileClassname(x, y, hasPiece)}
-              onClick={() => {
+              onClick={() =>
                 handlePieceClick(
                   x,
                   y,
@@ -908,8 +948,8 @@ const Board = ({
                   isPossibleMovement,
                   isPossibleTake,
                   isCastle
-                );
-              }}
+                )
+              }
             >
               {x === 0 && <span className="num-span">{number}</span>}
               {y === 7 && <span className="letter-span">{letter}</span>}
