@@ -8,8 +8,7 @@ const getPieceMovements = (
   lastMovement = ""
 ) => {
   var possibleMovements = [];
-  console.log("Getting movements for piece:", piece, "at position:", x, y);
-  console.log(piece.type);
+
   switch (piece.type) {
     case "pawn":
       possibleMovements = fromBoard
@@ -1074,7 +1073,7 @@ const validateMovement = (pieces, piece, movement, darkOnTop, lastMovement) => {
     pieceCoords.y,
     darkOnTop,
     pieces,
-    false,
+    true,
     lastMovement
   ) : getPieceMovements(
     selectedPiece,
@@ -1082,7 +1081,7 @@ const validateMovement = (pieces, piece, movement, darkOnTop, lastMovement) => {
     pieceCoords.y,
     pieces,
     darkOnTop,
-    false,
+    true,
     lastMovement
   );
 

@@ -1,22 +1,15 @@
 import axios from "axios";
-import { system_prompts } from "./prompts";
+import { system_prompts } from "./prompts.js";
+const openaiApiKey = import.meta.VITE_OPENAI_API_KEY;
 
 // //Instancia de axios
 const api = axios.create({
   baseURL: "https://api.openai.com/v1",
   timeout: 50000,
   headers: {
-    Authorization: `Bearer ${import.meta.env.VITE_OPENAI_API_KEY}`,
+    Authorization: `Bearer ${openaiApiKey}`,
   },
 });
-
-const createSystemPrompt = (difficulty, turn, regenerate, lastGeneratedMovement) => {
-  if(regenerate){
-
-  }else{
-    return `${system_prompts[difficulty]}\n- Juegas como: ${turn}`;
-  }
-};
 
 const createMovement = async (difficulty, history, turn, regenerate, lastGeneratedMovement) => {
   try {
