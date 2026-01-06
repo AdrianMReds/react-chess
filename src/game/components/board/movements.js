@@ -272,8 +272,6 @@ const getPawnMovements = (
     ? [{ x: x, y: y - 1 }]
     : [{ x: x, y: y + 1 }];
 
-    console.log("Possible Movements primera iteracion:", possibleMovements);
-
   // Usamos getPossibleTakes para ver si hay una pieza enemiga y quitar el movimiento
   if (getPossibleTakes(pieces, possibleMovements[0], piece)) {
     possibleMovements.pop();
@@ -293,8 +291,6 @@ const getPawnMovements = (
         ? { x: x, y: y - 2 }
         : { x: x, y: y + 2 }
     );
-
-    console.log("Possible Movements segunda iteracion:", possibleMovements);
 
     if (
       getPossibleTakes(
@@ -1006,6 +1002,7 @@ const getMovementsInCommon = (
 };
 
 const validateMovement = (pieces, piece, movement, darkOnTop, lastMovement) => {
+  // TODO: MANEJAR ENROQUE, PROMOCIÓN DE PEONES Y EN PASANT
   const darkxvalues = {
     a: 0,
     b: 1,
@@ -1037,19 +1034,24 @@ const validateMovement = (pieces, piece, movement, darkOnTop, lastMovement) => {
     x: darkOnTop ? darkxvalues[pieceX] : xvalues[pieceX],
     y: darkOnTop ? 8 - pieceY : pieceY - 1,
   };
-
-  console.log("Piece Coords:", pieceCoords);
   // Movimiento -> Coordenadas
-  const cleanMovement = ["N", "R", "B", "Q", "K", "x", "+", "#"];
+
+  let conversionType;
+
+  if (movement.includes("=")){
+    conversionType = movement.split("=")[1][0];
+  }
+
+  const cleanMovement = ["N", "R", "B", "Q", "K", "x", "+", "#", "="];
 
 	let i = 0;
 	while (movement.length > 2) {
 		movement = movement.replace(cleanMovement[i], "");
-		i++;
-
+    
 		if (i > cleanMovement.length - 1) {
-			movement = movement.slice(1);
+      movement = movement.slice(1);
 		}
+    i++;
 	}
 
   const movementX = movement[0];
@@ -1059,7 +1061,6 @@ const validateMovement = (pieces, piece, movement, darkOnTop, lastMovement) => {
     y: darkOnTop ? 8 - movementY : movementY - 1,
   };
 
-  console.log("Movement Coords:", movementCoords);
   // Validar el movimiento con sus coordenadas
       // Comparar con possibleMovements de la pieza
 
@@ -1085,18 +1086,16 @@ const validateMovement = (pieces, piece, movement, darkOnTop, lastMovement) => {
     lastMovement
   );
 
-  console.log("Possible Movements:", possibleMovements);
-
   const checkMovement = possibleMovements.find((pm) => {
     return pm.x === movementCoords.x && pm.y === movementCoords.y;
   })
 
   const isValid = checkMovement ? true : false;
 
-  return {isValid, piece: selectedPiece, movement: movementCoords, isTake: checkMovement ? checkMovement.isTake || false : false};
+  return {isValid, piece: selectedPiece, movement: movementCoords, isTake: checkMovement ? checkMovement.isTake || false : false, conversionType};
   
   // Estructura del return
-  // {isValid : bool, piece: coords, movement: coords, isTake: bool}
+  // {isValid : bool, piece: piece, movement: coords, isTake: bool}
 };
 
 export {

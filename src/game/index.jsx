@@ -1,9 +1,13 @@
 import "./game.css";
 import { useParams } from "react-router-dom";
 import Board from "./components/board";
-import { useState, useEffect } from "react";
+import { useState, useEffect, act } from "react";
 import EndgameModal from "./components/endgameModal";
-import { defineInitialPositions } from "../constants";
+
+import { validateMovement, movePiece, isKingOnCheck, getPieceMovements } from "./components/board/movements";
+import { createMovement } from "../openai";
+import { testPieces, testHistory } from "../constants";
+
 
 const types = ["pawn", "knight", "bishop", "rook", "queen"];
 
@@ -18,6 +22,34 @@ const defineNumbers = (gametype) => {
   }
   return ["8", "7", "6", "5", "4", "3", "2", "1"];
 };
+
+const getImage = (type, color) => {
+    var imageString;
+
+    switch (type) {
+      case "queen":
+        imageString = `q${color.charAt(0)}.png`;
+        break;
+
+      case "rook":
+        imageString = `r${color.charAt(0)}.png`;
+        break;
+
+      case "bishop":
+        imageString = `b${color.charAt(0)}.png`;
+        break;
+
+      case "knight":
+        imageString = `n${color.charAt(0)}.png`;
+        break;
+
+      default:
+        imageString = `p${color.charAt(0)}.png`;
+        break;
+    }
+
+    return imageString;
+  };
 
 const Game = () => {
   const { gametype, player1, player2, difficulty } = useParams();
@@ -81,23 +113,232 @@ const Game = () => {
     localStorage.setItem(gametype, JSON.stringify(gameConfiguration));
   };
 
+   const getNewHistory = (piece, movementString, actualHistory=null) => {
+    var tempHistory = actualHistory ? [...actualHistory] : [...history];
+
+    if (piece.color === "light") {
+      tempHistory.push({ light: movementString });
+    } else {
+      tempHistory[tempHistory.length - 1].dark = movementString; //-> {*}
+    }
+
+    return tempHistory;
+  };
+
+  const getLastMovement = () => {
+    if (!history.length) {
+      return "";
+    }
+
+    const lastTurn = history[history.length - 1];
+
+    return lastTurn.dark ? lastTurn.dark : lastTurn.light;
+  };
+
+  // Para probar el checkmate y stalemte ay que usar un tablero fijo como tempPieces
+  const generateAIMovement = async (newHistory, tempPieces) => {
+    // TODO: Ver tema de conversión de peones con IA
+    let isValid = false;
+    let regenerate = false;
+    let lastGeneratedMovement;
+    
+    do{
+      var newMovement = await createMovement(
+      difficulty,
+      newHistory,
+      color === "white" ? "dark" : "light",
+      regenerate
+      );
+
+      var validation = validateMovement(
+        tempPieces,
+        newMovement.pieza,
+        newMovement.movimiento,
+        darkOnTop,
+        getLastMovement()
+      );
+
+      isValid = validation.isValid;
+      regenerate = true;
+      lastGeneratedMovement = newMovement;
+    }while(!isValid)
+      
+    const capturedPiece = tempPieces.find((p) => {
+      return p.position.x === validation.movement.x && p.position.y === validation.movement.y;
+    });
+
+    var aiTempPieces = movePiece(tempPieces, validation.piece, validation.movement.x, validation.movement.y, validation.isTake);
+
+    if(validation.conversionType){
+      let pieceType;
+
+      switch(validation.conversionType){
+        case "Q":
+          pieceType = "queen";
+          break;
+        case "R":
+          pieceType = "rook";
+          break;
+        case "B":
+          pieceType = "bishop";
+          break;
+        case "N":
+          pieceType = "knight";
+          break;
+        default:
+          pieceType = "queen";
+          break;
+      }
+
+      //Cambiamos el peón a la otra pieza
+      const pieceToChange = aiTempPieces.find((p) => {
+        return p.name === validation.piece.name;
+      });
+
+      const pieceToChangeIndex = aiTempPieces.indexOf(pieceToChange);
+      var nameNum = 0;
+
+      aiTempPieces.forEach((p) => {
+        if (p.type === pieceType && p.color === validation.piece.color) {
+          nameNum++;
+        }
+      });
+
+      aiTempPieces[pieceToChangeIndex] = {
+      ...pieceToChange,
+      name: `${
+        validation.piece.color
+      }${pieceType[0].toUpperCase()}${pieceType.slice(1)}${nameNum + 1}`,
+      type: pieceType,
+      image: getImage(pieceType, validation.piece.color),
+    };
+    }
+
+    var aiNewHistory = getNewHistory(validation.piece, newMovement.movimiento, newHistory);
+
+    setHistory(aiNewHistory);
+
+    // Registrar captures
+    if(validation.isTake){
+      // TODO: En pasant hay que checar si es peón, si se está moviendo en diagonal y no hay capturedPiece
+      // TODO: Checar Enroque con IA
+      var newCapturesTop = [...capturesTop, capturedPiece];
+      setCapturesTop(newCapturesTop);
+      }
+
+    // Registrar jaque
+    const tempKing = tempPieces.find((p) => {
+        return p.type === "king" && p.color !== validation.piece.color;
+      });
+
+      var tempLightCheck = false;
+      var tempDarkCheck = false;
+
+      const kingOnCheck = !isKingOnCheck(
+        tempPieces,
+        tempKing.position,
+        tempKing,
+        darkOnTop
+      );
+
+      if (kingOnCheck) {
+        if (tempKing.color === "light") {
+          setLightKingOnCheck(true);
+          tempLightCheck = true;
+        } else {
+          setDarkKingOnCheck(true);
+          tempDarkCheck = true;
+        }
+      } else {
+        setLightKingOnCheck(false);
+        setDarkKingOnCheck(false);
+        tempLightCheck = false;
+        tempDarkCheck = false;
+      }
+
+
+
+    setPieces(aiTempPieces);
+    setTurn(color === "white" ? "light" : "dark");
+    
+    // Registrar jaque mate o stalemate
+    const friendlyPieces = tempPieces.filter(
+          (p) => p.color === tempKing.color
+        );
+
+    var noMovesLeft = true;
+
+    for (var i = 0; i < friendlyPieces.length; i++) {
+      var friendlyPiece = friendlyPieces[i];
+
+      var friendlyPieceMovements = getPieceMovements(
+        friendlyPiece,
+        friendlyPiece.position.x,
+        friendlyPiece.position.y,
+        tempPieces,
+        darkOnTop,
+        true,
+        getLastMovement()
+      );
+
+      if (friendlyPieceMovements.length) {
+        noMovesLeft = false;
+        break;
+      }
+    }
+
+    var tempCheckmate = false;
+    var tempStalemate = false;
+    var tempWinner = "";
+
+    if (noMovesLeft) {
+      if (kingOnCheck) {
+        tempCheckmate = true;
+        tempWinner = tempKing.color === "light" ? "dark" : "light";
+        setCheckMate(true);
+        setWinner(tempKing.color === "light" ? "dark" : "light");
+      } else {
+        tempStalemate = true;
+        setStaleMate(true);
+      }
+      setTurn("");
+    }
+
+    //Save game after AI move
+
+    saveGame(
+      tempPieces,
+      newHistory,
+      capturesBottom,
+      capturesTop,
+      tempLightCheck,
+      tempDarkCheck,
+      tempCheckmate,
+      tempStalemate,
+      tempWinner
+    );
+  };
+
   useEffect(() => {
     const actualConfiguration = JSON.parse(localStorage.getItem(gametype));
-
+    
     if (
       actualConfiguration.gametype === "ai" &&
       actualConfiguration.isNew &&
       color === "black"
     ) {
       // Empieza la IA
+      generateAIMovement([], actualConfiguration.pieces);
     }
 
     //Asignar todo a como está la configuración
     setHistory(actualConfiguration.history);
+    // setHistory(testHistory);
     setCapturesTop(actualConfiguration.capturesTop);
     setCapturesBottom(actualConfiguration.capturesBottom);
     setTurn(actualConfiguration.turn);
     setPieces(actualConfiguration.pieces);
+    // setPieces(testPieces);
     setLightKingOnCheck(actualConfiguration.lightKingOnCheck);
     setDarkKingOnCheck(actualConfiguration.darkKingOnCheck);
     setCheckMate(actualConfiguration.checkmate);
@@ -127,6 +368,7 @@ const Game = () => {
             ? player2
             : player1}
         </h2>
+        {/* TODO: Ver si ponemos outline a imagenes de captures negras */}
         <div className="captures">
           {types.map((type) => {
             const tempTypeList = capturesTop.filter((capture) => {
@@ -195,6 +437,9 @@ const Game = () => {
           gametypeName={gametypeName}
           color={color === "white" ? "light" : "dark"}
           difficulty={difficulty}
+          getNewHistory={getNewHistory}
+          getLastMovement={getLastMovement}
+          generateAIMovement={generateAIMovement}
         />
         <div className="history">
           <div>
@@ -291,4 +536,4 @@ const Game = () => {
 
 export default Game;
 
-export { defineNumbers };
+export { defineNumbers, getImage };

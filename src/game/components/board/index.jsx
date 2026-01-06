@@ -13,11 +13,9 @@ import {
   getPieceMovements,
   getMovementsInCommon,
   getMovementString,
-  validateMovement,
 } from "./movements";
 import PawnModal from "../pawnModal";
-
-import { createMovement } from "../../../openai";
+import { getImage } from "../../../game"
 
 const Board = ({
   pieces,
@@ -45,6 +43,9 @@ const Board = ({
   gametypeName,
   color,
   difficulty,
+  getNewHistory,
+  getLastMovement,
+  generateAIMovement,
 }) => {
   const darkOnTop = numbers[0] === "8";
 
@@ -70,41 +71,10 @@ const Board = ({
     }
   }, [selectedPiece]);
 
-  const getImage = (type, color) => {
-    var imageString;
-
-    switch (type) {
-      case "queen":
-        imageString = `q${color.charAt(0)}.png`;
-        break;
-
-      case "rook":
-        imageString = `r${color.charAt(0)}.png`;
-        break;
-
-      case "bishop":
-        imageString = `b${color.charAt(0)}.png`;
-        break;
-
-      case "knight":
-        imageString = `n${color.charAt(0)}.png`;
-        break;
-
-      default:
-        imageString = `p${color.charAt(0)}.png`;
-        break;
-    }
-
-    return imageString;
-  };
-
   const convertPawn = (pieceType) => {
-    console.log("convert");
-    console.log(openPawnModal);
     var tempPieces;
     //Hacemos move o take
     if (openPawnModal.type === "movement") {
-      console.log("move");
       tempPieces = movePiece(
         [...pieces],
         selectedPiece,
@@ -112,7 +82,6 @@ const Board = ({
         openPawnModal.coords.y
       );
     } else {
-      console.log("take");
       const piece = pieces.find((p) => {
         return (
           p.position.x === openPawnModal.coords.x &&
@@ -153,8 +122,6 @@ const Board = ({
     // tempPieces[pieceToChangeIndex].type = "...";
     // tempPieces[pieceToChangeIndex].image = "/...";
 
-    console.log("1");
-
     var nameNum = 0;
 
     tempPieces.forEach((p) => {
@@ -181,8 +148,6 @@ const Board = ({
 
     var tempLightCheck = false;
     var tempDarkCheck = false;
-
-    console.log("2");
 
     const kingOnCheck = !isKingOnCheck(
       tempPieces,
@@ -288,28 +253,6 @@ const Board = ({
       coords: {},
       type: "",
     });
-  };
-
-  const getNewHistory = (piece, movementString) => {
-    var tempHistory = [...history];
-
-    if (piece.color === "light") {
-      tempHistory.push({ light: movementString });
-    } else {
-      tempHistory[tempHistory.length - 1].dark = movementString; //-> {*}
-    }
-
-    return tempHistory;
-  };
-
-  const getLastMovement = () => {
-    if (!history.length) {
-      return "";
-    }
-
-    const lastTurn = history[history.length - 1];
-
-    return lastTurn.dark ? lastTurn.dark : lastTurn.light;
   };
 
   const getTileClassname = (x, y, hasPiece) => {
@@ -612,32 +555,9 @@ const Board = ({
           tempWinner
         );
 
-        let isValid = false;
-        let regenerate = false;
-        let lastGeneratedMovement;
-        
-        do{
-          const newMovement = await createMovement(
-          difficulty,
-          newHistory,
-          color === "light" ? "dark" : "light",
-          regenerate
-          );
-
-          console.log(newMovement);
-
-          const validation = validateMovement(
-            pieces,
-            newMovement.pieza,
-            newMovement.movimiento,
-            darkOnTop,
-            getLastMovement()
-          );
-
-          isValid = validation.isValid;
-          regenerate = true;
-          lastGeneratedMovement = newMovement;
-        }while(!isValid)
+        if(gametypeName === "ai"){
+          generateAIMovement(newHistory, tempPieces);
+        }
         
       }
       return;
@@ -836,6 +756,11 @@ const Board = ({
         tempStalemate,
         tempWinner
       );
+
+      if(gametypeName === "ai"){
+        generateAIMovement(newHistory, tempPieces);
+      }
+
       return;
     }
 
