@@ -281,185 +281,416 @@ const defineInitialPositions = (numbers) => {
   return [...darkPieces, ...lightPieces];
 };
 
-const testHistory = [
-    {
-        "name": "darkKing",
-        "type": "king",
-        position: {
-            x: 0,
-            y: 0
-        },
-        "color": "dark",
-        "image": "kd.png",
-        "movements": [],
-        "hasMoved": true
-    },
-    {
-        "name": "darkPawn3",
-        "type": "pawn",
-        position: {
-            x: 2,
-            y: 6
-        },
-        "color": "dark",
-        "image": "pd.png",
-        "movements": [],
-        "hasMoved": true
-    },
-    {
-        "name": "lightQueen",
-        "type": "queen",
-        position: {
-            x: 1,
-            y: 2
-        },
-        "color": "light",
-        "image": "ql.png",
-        "movements": [],
-        "hasMoved": true
-    },
-    {
-        "name": "lightKing",
-        "type": "king",
-        position: {
-            x: 7,
-            y: 7
-        },
-        "color": "light",
-        "image": "kl.png",
-        "movements": [],
-        "hasMoved": true
-    }
-];
+// const tempPieces = [
+//     {
+//         "name": "darkRook1",
+//         "type": "rook",
+//         "position": {
+//             "x": 0,
+//             "y": 0
+//         },
+//         "color": "dark",
+//         "image": "rd.png",
+//         "movements": []
+//     },
+//     {
+//         "name": "darkKnight1",
+//         "type": "knight",
+//         "position": {
+//             "x": 2,
+//             "y": 2
+//         },
+//         "color": "dark",
+//         "image": "nd.png",
+//         "movements": [],
+//         "hasMoved": true
+//     },
+//     {
+//         "name": "darkBishop1",
+//         "type": "bishop",
+//         "position": {
+//             "x": 5,
+//             "y": 3
+//         },
+//         "color": "dark",
+//         "image": "bd.png",
+//         "movements": [],
+//         "hasMoved": true
+//     },
+//     {
+//         "name": "darkQueen",
+//         "type": "queen",
+//         "position": {
+//             "x": 3,
+//             "y": 2
+//         },
+//         "color": "dark",
+//         "image": "qd.png",
+//         "movements": [],
+//         "hasMoved": true
+//     },
+//     {
+//         "name": "darkKing",
+//         "type": "king",
+//         "position": {
+//             "x": 4,
+//             "y": 0
+//         },
+//         "color": "dark",
+//         "image": "kd.png",
+//         "movements": []
+//     },
+//     {
+//         "name": "darkBishop2",
+//         "type": "bishop",
+//         "position": {
+//             "x": 2,
+//             "y": 3
+//         },
+//         "color": "dark",
+//         "image": "bd.png",
+//         "movements": [],
+//         "hasMoved": true
+//     },
+//     {
+//         "name": "darkKnight2",
+//         "type": "knight",
+//         "position": {
+//             "x": 5,
+//             "y": 2
+//         },
+//         "color": "dark",
+//         "image": "nd.png",
+//         "movements": [],
+//         "hasMoved": true
+//     },
+//     {
+//         "name": "darkRook2",
+//         "type": "rook",
+//         "position": {
+//             "x": 7,
+//             "y": 0
+//         },
+//         "color": "dark",
+//         "image": "rd.png",
+//         "movements": []
+//     },
+//     {
+//         "name": "darkPawn1",
+//         "type": "pawn",
+//         "position": {
+//             "x": 0,
+//             "y": 1
+//         },
+//         "color": "dark",
+//         "image": "pd.png",
+//         "movements": [],
+//         "hasMoved": false
+//     },
+//     {
+//         "name": "darkPawn2",
+//         "type": "pawn",
+//         "position": {
+//             "x": 1,
+//             "y": 1
+//         },
+//         "color": "dark",
+//         "image": "pd.png",
+//         "movements": [],
+//         "hasMoved": false
+//     },
+//     {
+//         "name": "darkPawn3",
+//         "type": "pawn",
+//         "position": {
+//             "x": 2,
+//             "y": 1
+//         },
+//         "color": "dark",
+//         "image": "pd.png",
+//         "movements": [],
+//         "hasMoved": false
+//     },
+//     {
+//         "name": "darkPawn4",
+//         "type": "pawn",
+//         "position": {
+//             "x": 3,
+//             "y": 3
+//         },
+//         "color": "dark",
+//         "image": "pd.png",
+//         "movements": [],
+//         "hasMoved": true
+//     },
+//     {
+//         "name": "darkPawn5",
+//         "type": "pawn",
+//         "position": {
+//             "x": 4,
+//             "y": 3
+//         },
+//         "color": "dark",
+//         "image": "pd.png",
+//         "movements": [],
+//         "hasMoved": true
+//     },
+//     {
+//         "name": "darkPawn6",
+//         "type": "pawn",
+//         "position": {
+//             "x": 5,
+//             "y": 1
+//         },
+//         "color": "dark",
+//         "image": "pd.png",
+//         "movements": [],
+//         "hasMoved": false
+//     },
+//     {
+//         "name": "darkPawn7",
+//         "type": "pawn",
+//         "position": {
+//             "x": 6,
+//             "y": 1
+//         },
+//         "color": "dark",
+//         "image": "pd.png",
+//         "movements": [],
+//         "hasMoved": false
+//     },
+//     {
+//         "name": "darkPawn8",
+//         "type": "pawn",
+//         "position": {
+//             "x": 7,
+//             "y": 1
+//         },
+//         "color": "dark",
+//         "image": "pd.png",
+//         "movements": [],
+//         "hasMoved": false
+//     },
+//     {
+//         "name": "lightRook1",
+//         "type": "rook",
+//         "position": {
+//             "x": 0,
+//             "y": 7
+//         },
+//         "color": "light",
+//         "image": "rl.png",
+//         "movements": []
+//     },
+//     {
+//         "name": "lightKnight1",
+//         "type": "knight",
+//         "position": {
+//             "x": 2,
+//             "y": 5
+//         },
+//         "color": "light",
+//         "image": "nl.png",
+//         "movements": [],
+//         "hasMoved": true
+//     },
+//     {
+//         "name": "lightBishop1",
+//         "type": "bishop",
+//         "position": {
+//             "x": 5,
+//             "y": 4
+//         },
+//         "color": "light",
+//         "image": "bl.png",
+//         "movements": [],
+//         "hasMoved": true
+//     },
+//     {
+//         "name": "lightQueen",
+//         "type": "queen",
+//         "position": {
+//             "x": 3,
+//             "y": 5
+//         },
+//         "color": "light",
+//         "image": "ql.png",
+//         "movements": [],
+//         "hasMoved": true
+//     },
+//     {
+//         "name": "lightKing",
+//         "type": "king",
+//         "position": {
+//             "x": 4,
+//             "y": 7
+//         },
+//         "color": "light",
+//         "image": "kl.png",
+//         "movements": []
+//     },
+//     {
+//         "name": "lightBishop2",
+//         "type": "bishop",
+//         "position": {
+//             "x": 2,
+//             "y": 4
+//         },
+//         "color": "light",
+//         "image": "bl.png",
+//         "movements": [],
+//         "hasMoved": true
+//     },
+//     {
+//         "name": "lightKnight2",
+//         "type": "knight",
+//         "position": {
+//             "x": 5,
+//             "y": 5
+//         },
+//         "color": "light",
+//         "image": "nl.png",
+//         "movements": [],
+//         "hasMoved": true
+//     },
+//     {
+//         "name": "lightRook2",
+//         "type": "rook",
+//         "position": {
+//             "x": 7,
+//             "y": 7
+//         },
+//         "color": "light",
+//         "image": "rl.png",
+//         "movements": []
+//     },
+//     {
+//         "name": "lightPawn1",
+//         "type": "pawn",
+//         "position": {
+//             "x": 0,
+//             "y": 6
+//         },
+//         "color": "light",
+//         "image": "pl.png",
+//         "movements": [],
+//         "hasMoved": false
+//     },
+//     {
+//         "name": "lightPawn2",
+//         "type": "pawn",
+//         "position": {
+//             "x": 1,
+//             "y": 6
+//         },
+//         "color": "light",
+//         "image": "pl.png",
+//         "movements": [],
+//         "hasMoved": false
+//     },
+//     {
+//         "name": "lightPawn3",
+//         "type": "pawn",
+//         "position": {
+//             "x": 2,
+//             "y": 6
+//         },
+//         "color": "light",
+//         "image": "pl.png",
+//         "movements": [],
+//         "hasMoved": false
+//     },
+//     {
+//         "name": "lightPawn4",
+//         "type": "pawn",
+//         "position": {
+//             "x": 3,
+//             "y": 4
+//         },
+//         "color": "light",
+//         "image": "pl.png",
+//         "movements": [],
+//         "hasMoved": true
+//     },
+//     {
+//         "name": "lightPawn5",
+//         "type": "pawn",
+//         "position": {
+//             "x": 4,
+//             "y": 4
+//         },
+//         "color": "light",
+//         "image": "pl.png",
+//         "movements": [],
+//         "hasMoved": true
+//     },
+//     {
+//         "name": "lightPawn6",
+//         "type": "pawn",
+//         "position": {
+//             "x": 5,
+//             "y": 6
+//         },
+//         "color": "light",
+//         "image": "pl.png",
+//         "movements": [],
+//         "hasMoved": false
+//     },
+//     {
+//         "name": "lightPawn7",
+//         "type": "pawn",
+//         "position": {
+//             "x": 6,
+//             "y": 6
+//         },
+//         "color": "light",
+//         "image": "pl.png",
+//         "movements": [],
+//         "hasMoved": false
+//     },
+//     {
+//         "name": "lightPawn8",
+//         "type": "pawn",
+//         "position": {
+//             "x": 7,
+//             "y": 6
+//         },
+//         "color": "light",
+//         "image": "pl.png",
+//         "movements": [],
+//         "hasMoved": false
+//     }
+// ];
 
-const testPieces = [
-    {
-        "light": "e4",
-        "dark": "e6"
-    },
-    {
-        "light": "Qg4",
-        "dark": "Qh4"
-    },
-    {
-        "light": "Qxg7",
-        "dark": "Qxh2"
-    },
-    {
-        "light": "Qxh7",
-        "dark": "Qxh1"
-    },
-    {
-        "light": "Qxh8",
-        "dark": "Qxg2"
-    },
-    {
-        "light": "Qxg8",
-        "dark": "Qxg1"
-    },
-    {
-        "light": "Qxf7+",
-        "dark": "Kd8"
-    },
-    {
-        "light": "Qxe6",
-        "dark": "Qxf2+"
-    },
-    {
-        "light": "Kd1",
-        "dark": "Qf4"
-    },
-    {
-        "light": "Qb6",
-        "dark": "Qxe4"
-    },
-    {
-        "light": "Qxa7",
-        "dark": "Qxc2+"
-    },
-    {
-        "light": "Ke1",
-        "dark": "Qxb2"
-    },
-    {
-        "light": "Qxa8",
-        "dark": "Qxa2"
-    },
-    {
-        "light": "Qxb8",
-        "dark": "Qxa1"
-    },
-    {
-        "light": "Qxb7",
-        "dark": "Qxb1"
-    },
-    {
-        "light": "Qxc8+",
-        "dark": "Ke7"
-    },
-    {
-        "light": "Qxf8+",
-        "dark": "Ke6"
-    },
-    {
-        "light": "Qf5+",
-        "dark": "Ke7"
-    },
-    {
-        "light": "d3",
-        "dark": "Qxd3"
-    },
-    {
-        "light": "Qd5",
-        "dark": "Qxf1+"
-    },
-    {
-        "light": "Kd2",
-        "dark": "Kd8"
-    },
-    {
-        "light": "Ke3",
-        "dark": "Qxc1+"
-    },
-    {
-        "light": "Kf2",
-        "dark": "Qh6"
-    },
-    {
-        "light": "Qf7",
-        "dark": "Kc8"
-    },
-    {
-        "light": "Qe7",
-        "dark": "Kb8"
-    },
-    {
-        "light": "Qxd7",
-        "dark": "Ka8"
-    },
-    {
-        "light": "Kg2",
-        "dark": "c5"
-    },
-    {
-        "light": "Qc7",
-        "dark": "Qb6"
-    },
-    {
-        "light": "Qxb6",
-        "dark": "c4"
-    },
-    {
-        "light": "Qc7",
-        "dark": "c3"
-    },
-    {
-        "light": "Kh1",
-        "dark": "c2"
-    },
-    {
-        "light": "Qb6"
-    }
-];
+// const tempHistory = [
+//     {
+//         "light": "e4",
+//         "dark": "e5"
+//     },
+//     {
+//         "light": "d4",
+//         "dark": "d5"
+//     },
+//     {
+//         "light": "Bc4",
+//         "dark": "Bf5"
+//     },
+//     {
+//         "light": "Bf4",
+//         "dark": "Bc5"
+//     },
+//     {
+//         "light": "Nc3",
+//         "dark": "Nc6"
+//     },
+//     {
+//         "light": "Nf3",
+//         "dark": "Nf6"
+//     },
+//     {
+//         "light": "Qd3",
+//         "dark": "Qd6"
+//     }
+// ];
 
-export { defineInitialPositions, testPieces, testHistory };
+export { defineInitialPositions, tempPieces, tempHistory };

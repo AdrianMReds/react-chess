@@ -6,10 +6,12 @@ import EndgameModal from "./components/endgameModal";
 
 import { validateMovement, movePiece, isKingOnCheck, getPieceMovements } from "./components/board/movements";
 import { createMovement } from "../openai";
-import { testPieces, testHistory } from "../constants";
 
+import { tempPieces, tempHistory } from "../constants.js";
 
 const types = ["pawn", "knight", "bishop", "rook", "queen"];
+
+//TODO: Cuando jugamos con las negras vs IA no se cambia el turno en localStorage
 
 const defineNumbers = (gametype) => {
   const gametypeArray = gametype.split("_");
@@ -75,6 +77,7 @@ const Game = () => {
   const color = gametype.split("_")[1];
 
   const darkOnTop = numbers[0] === "8";
+  // const darkOnTop = false;
 
   const saveGame = (
     pieces,
@@ -148,7 +151,7 @@ const Game = () => {
       newHistory,
       color === "white" ? "dark" : "light",
       regenerate
-      );
+      ); 
 
       var validation = validateMovement(
         tempPieces,
@@ -162,12 +165,37 @@ const Game = () => {
       regenerate = true;
       lastGeneratedMovement = newMovement;
     }while(!isValid)
+
+    var currentPieceX = validation.piece.position.x;
       
     const capturedPiece = tempPieces.find((p) => {
       return p.position.x === validation.movement.x && p.position.y === validation.movement.y;
     });
 
     var aiTempPieces = movePiece(tempPieces, validation.piece, validation.movement.x, validation.movement.y, validation.isTake);
+
+    if(validation.isCastle){
+      if (currentPieceX === 4){
+        var rookToCastle = aiTempPieces.find((p) => {
+          return p.type === "rook" && p.color === validation.piece.color && p.position.x === (newMovement.movimiento.length > 3 ? 0 : 7);
+        })
+        console.log(rookToCastle)
+        //MovePiece de rookToCastle
+          if(rookToCastle.position.x === 0){
+            var aiTempPieces = movePiece(aiTempPieces, rookToCastle, 3, rookToCastle.position.y, false);
+          }else{
+            var aiTempPieces = movePiece(aiTempPieces, rookToCastle, 5, rookToCastle.position.y, false);
+          }
+      }else{
+        var rookToCastle = aiTempPieces.find((p) => {
+          return p.type === "rook" && p.color === validation.piece.color && p.position.x === (newMovement.movimiento.length > 3 ? 7 : 0);
+      })
+      if(rookToCastle.position.x === 0){
+          var aiTempPieces = movePiece(aiTempPieces, rookToCastle, 2, rookToCastle.position.y, false);
+        }else{
+          var aiTempPieces = movePiece(aiTempPieces, rookToCastle, 4, rookToCastle.position.y, false);
+        }
+    }}
 
     if(validation.conversionType){
       let pieceType;
@@ -221,7 +249,6 @@ const Game = () => {
     // Registrar captures
     if(validation.isTake){
       // TODO: En pasant hay que checar si es peón, si se está moviendo en diagonal y no hay capturedPiece
-      // TODO: Checar Enroque con IA
       var newCapturesTop = [...capturesTop, capturedPiece];
       setCapturesTop(newCapturesTop);
       }
@@ -333,12 +360,12 @@ const Game = () => {
 
     //Asignar todo a como está la configuración
     setHistory(actualConfiguration.history);
-    // setHistory(testHistory);
+    // setHistory(tempHistory);
     setCapturesTop(actualConfiguration.capturesTop);
     setCapturesBottom(actualConfiguration.capturesBottom);
     setTurn(actualConfiguration.turn);
     setPieces(actualConfiguration.pieces);
-    // setPieces(testPieces);
+    // setPieces(tempPieces);
     setLightKingOnCheck(actualConfiguration.lightKingOnCheck);
     setDarkKingOnCheck(actualConfiguration.darkKingOnCheck);
     setCheckMate(actualConfiguration.checkmate);

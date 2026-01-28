@@ -380,7 +380,7 @@ const Board = ({
             tempPieces = movePiece(
               [...pieces],
               rookToMove,
-              5,
+              darkOnTop ? 5 : 4,
               rookToMove.position.y
             );
             castleDirection = "short";
@@ -397,7 +397,7 @@ const Board = ({
             tempPieces = movePiece(
               [...pieces],
               rookToMove,
-              3,
+              darkOnTop ? 3 : 2,
               rookToMove.position.y
             );
             castleDirection = "long";

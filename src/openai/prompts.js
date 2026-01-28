@@ -52,7 +52,8 @@ Devuelve solo un objeto JSON con esta estructura:
 
 📌 Instrucciones adicionales: 
 •⁠  No expliques tu jugada. 
-•⁠  No incluyas ningún texto fuera del JSON.`;
+•⁠  No incluyas ningún texto fuera del JSON.
+`;
 
 const system_prompts = {
   medium: MEDIUM_SYSTEM_PROMPT,

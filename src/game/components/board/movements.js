@@ -264,6 +264,7 @@ const getPawnMovements = (
   fromBoard = false,
   lastMovement
 ) => {
+  console.log("Last movement in pawn: ", lastMovement);
   var possibleMovements = darkOnTop
     ? piece.color === "dark"
       ? [{ x: x, y: y + 1 }]
@@ -396,6 +397,7 @@ const getPawnMovements = (
   }
 
   if (y === 4) {
+    console.log("Checking en passant at y=4");
     if (!darkOnTop && piece.color === "light") {
       if (checkEnPasant(pieces, piece, lastx, lasty)) {
         filteredMovements.push({
@@ -407,6 +409,7 @@ const getPawnMovements = (
     }
 
     if (darkOnTop && piece.color === "dark") {
+      console.log("Checking en passant at y=4 for dark on top and dark piece");
       if (checkEnPasant(pieces, piece, lastx, lasty)) {
         filteredMovements.push({
           x: lastx,
@@ -503,6 +506,8 @@ Reglas de enroque:
 2. Que no haya piezas en medio del rey y la torre
 3. Que ninguno de los cuadritos por donde se desplaza el rey estén en jaque.
 */
+
+//TODO: No jala el enroque corto cuando jugamos con las negras vs IA
 const getKingMovements = (
   piece,
   x,
@@ -547,6 +552,9 @@ const getKingMovements = (
       );
     });
 
+    console.log("Rook1: ", rook1);
+    console.log("Rook2: ", rook2);
+
     //Ver si las torres amigas ya se movieron
     if (rook1 && !rook1.hasMoved) {
       const rook1Movements = getRookMovements(
@@ -584,6 +592,31 @@ const getKingMovements = (
             }
             castle1 = true;
           }
+        }else if(!darkOnTop && rook1Movements.length >= 2){
+          //Caso especial para negras vs IA
+          for (let i = 1; i < 3; i++) {
+            //Si no tiene el movimiento que se salga del for (que ya no cheque más)
+            if (
+              !rook1Movements.some((m) => {
+                return m.x === rook1.position.x + i && m.y === rook1.position.y;
+              })
+            ) {
+              castle1 = false;
+              break;
+            }
+            if (
+              !isKingOnCheck(
+                pieces,
+                { x: rook1.position.x + i, y: rook1.position.y },
+                piece,
+                darkOnTop
+              )
+            ) {
+              castle1 = false;
+              break;
+            }
+            castle1 = true;
+          }
         }
         if (castle1) {
           filteredMovements.push({
@@ -592,9 +625,33 @@ const getKingMovements = (
             isCastle: true,
           });
         }
-      } else {
-        //Rook2 cuando mataron a rook1
-        if (rook1Movements.length >= 2) {
+      } else { //Rook2 cuando mataron a rook1
+        if(!darkOnTop && rook1Movements.length >= 3){
+          //Caso especial para negras vs IA
+          for (let i = 3; i > 0; i--) {
+            //Si no tiene el movimiento que se salga del for (que ya no cheque más)
+            if (
+              !rook1Movements.some((m) => {
+                return m.x === rook1.position.x - i && m.y === rook1.position.y;
+              })
+            ) {
+              castle1 = false;
+              break;
+            }
+            if (
+              !isKingOnCheck(
+                pieces,
+                { x: rook1.position.x - i, y: rook1.position.y },
+                piece,
+                darkOnTop
+              )
+            ) {
+              castle1 = false;
+              break;
+            }
+            castle1 = true;
+          }
+        }else if (rook1Movements.length >= 2) {
           for (let i = 2; i > 0; i--) {
             //Si no tiene el movimiento que se salga del for (que ya no cheque más)
             if (
@@ -640,7 +697,33 @@ const getKingMovements = (
 
       var castle2 = false;
 
-      if (rook2Movements.length >= 2) {
+      if(!darkOnTop && rook2Movements.length >= 3){
+          console.log("Check rook2 enroque");
+          //Caso especial para negras vs IA
+          for (let i = 3; i > 0; i--) {
+            //Si no tiene el movimiento que se salga del for (que ya no cheque más)
+            if (
+              !rook2Movements.some((m) => {
+                return m.x === rook2.position.x - i && m.y === rook2.position.y;
+              })
+            ) {
+              castle2 = false;
+              break;
+            }
+            if (
+              !isKingOnCheck(
+                pieces,
+                { x: rook2.position.x - i, y: rook2.position.y },
+                piece,
+                darkOnTop
+              )
+            ) {
+              castle2 = false;
+              break;
+            }
+            castle2 = true;
+          }
+        }else if (rook2Movements.length >= 2) {
         for (let i = 2; i > 0; i--) {
           //Si no tiene el movimiento que se salga del for (que ya no cheque más)
           if (
@@ -664,14 +747,14 @@ const getKingMovements = (
           }
           castle2 = true;
         }
-        if (castle2) {
-          filteredMovements.push({
-            x: piece.position.x + 2,
-            y: piece.position.y,
-            isCastle: true,
-          });
-        }
       }
+    }
+    if (castle2) {
+      filteredMovements.push({
+        x: piece.position.x + 2,
+        y: piece.position.y,
+        isCastle: true,
+      });
     }
 
     //Revisar si hay piezas entre el rey y la torre
@@ -705,6 +788,8 @@ const getKingMovements = (
       );
     });
   }
+
+  console.log("Filtered king movements: ", filteredMovements);
 
   return filteredMovements;
 };
@@ -1002,7 +1087,7 @@ const getMovementsInCommon = (
 };
 
 const validateMovement = (pieces, piece, movement, darkOnTop, lastMovement) => {
-  // TODO: MANEJAR ENROQUE, PROMOCIÓN DE PEONES Y EN PASANT
+  // TODO: MANEJAR EN PASANT
   const darkxvalues = {
     a: 0,
     b: 1,
@@ -1037,6 +1122,24 @@ const validateMovement = (pieces, piece, movement, darkOnTop, lastMovement) => {
   // Movimiento -> Coordenadas
 
   let conversionType;
+  let castleX;
+  let castleY;
+  let movementCoords;
+  let isCastle = false;
+
+  if(movement.includes("O") || movement.includes("0")){
+    console.log("Enroque detectado");
+    if(movement.length > 3){
+      //Enroque largo
+      castleX = darkOnTop ? 2 : 5;
+      castleY = pieceCoords.y;
+    }else{
+      //Enroque corto
+      castleX = darkOnTop ? 6 : 1;
+      castleY = pieceCoords.y;
+    }
+    console.log("Coordenadas de enroque: ", castleX, castleY);
+  }
 
   if (movement.includes("=")){
     conversionType = movement.split("=")[1][0];
@@ -1054,13 +1157,23 @@ const validateMovement = (pieces, piece, movement, darkOnTop, lastMovement) => {
     i++;
 	}
 
-  const movementX = movement[0];
-  const movementY = parseInt(movement[1]);
-  const movementCoords = {
-    x: darkOnTop ? darkxvalues[movementX] : xvalues[movementX],
-    y: darkOnTop ? 8 - movementY : movementY - 1,
-  };
+  if(castleX !== undefined && castleY !== undefined){
+    isCastle = true;
+    movementCoords = {
+      x: castleX,
+      y: castleY,
+    };
+  }else{
+    const movementX = movement[0];
+    const movementY = parseInt(movement[1]);
+  
+    movementCoords = {
+      x: darkOnTop ? darkxvalues[movementX] : xvalues[movementX],
+      y: darkOnTop ? 8 - movementY : movementY - 1,
+    };
+  }
 
+  console.log("Movement coords: ", movementCoords);
   // Validar el movimiento con sus coordenadas
       // Comparar con possibleMovements de la pieza
 
@@ -1086,13 +1199,15 @@ const validateMovement = (pieces, piece, movement, darkOnTop, lastMovement) => {
     lastMovement
   );
 
+  console.log("Possible movements: ", possibleMovements);
+
   const checkMovement = possibleMovements.find((pm) => {
     return pm.x === movementCoords.x && pm.y === movementCoords.y;
   })
 
   const isValid = checkMovement ? true : false;
 
-  return {isValid, piece: selectedPiece, movement: movementCoords, isTake: checkMovement ? checkMovement.isTake || false : false, conversionType};
+  return {isValid, piece: selectedPiece, movement: movementCoords, isTake: checkMovement ? checkMovement.isTake || false : false, conversionType, isCastle};
   
   // Estructura del return
   // {isValid : bool, piece: piece, movement: coords, isTake: bool}
