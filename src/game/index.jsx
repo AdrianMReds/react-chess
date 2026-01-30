@@ -93,7 +93,7 @@ const Game = () => {
     /*
     Keys:
     "ai_<color>", "two-players_<color>"
-  */
+    */
 
     const gameConfiguration = {
       pieces: pieces,
@@ -128,12 +128,12 @@ const Game = () => {
     return tempHistory;
   };
 
-  const getLastMovement = () => {
-    if (!history.length) {
+  const getLastMovement = (newHistory = history) => {
+    if (!newHistory.length) {
       return "";
     }
 
-    const lastTurn = history[history.length - 1];
+    const lastTurn = newHistory[newHistory.length - 1];
 
     return lastTurn.dark ? lastTurn.dark : lastTurn.light;
   };
@@ -158,7 +158,7 @@ const Game = () => {
         newMovement.pieza,
         newMovement.movimiento,
         darkOnTop,
-        getLastMovement()
+        getLastMovement(newHistory)
       );
 
       isValid = validation.isValid;
@@ -168,7 +168,7 @@ const Game = () => {
 
     var currentPieceX = validation.piece.position.x;
       
-    const capturedPiece = tempPieces.find((p) => {
+    var capturedPiece = tempPieces.find((p) => {
       return p.position.x === validation.movement.x && p.position.y === validation.movement.y;
     });
 
@@ -179,7 +179,6 @@ const Game = () => {
         var rookToCastle = aiTempPieces.find((p) => {
           return p.type === "rook" && p.color === validation.piece.color && p.position.x === (newMovement.movimiento.length > 3 ? 0 : 7);
         })
-        console.log(rookToCastle)
         //MovePiece de rookToCastle
           if(rookToCastle.position.x === 0){
             var aiTempPieces = movePiece(aiTempPieces, rookToCastle, 3, rookToCastle.position.y, false);
@@ -248,7 +247,15 @@ const Game = () => {
 
     // Registrar captures
     if(validation.isTake){
-      // TODO: En pasant hay que checar si es peón, si se está moviendo en diagonal y no hay capturedPiece
+      //Es en pasant
+      if(validation.piece.type === "pawn" && !capturedPiece){
+          capturedPiece = aiTempPieces.find((p) => {
+            return p.position.x === validation.movement.x && p.position.y ===       validation.movement.y - 1;
+      });
+
+        const aiTempPieceIndex = aiTempPieces.indexOf(capturedPiece);
+        aiTempPieces.splice(aiTempPieceIndex, 1);
+      }
       var newCapturesTop = [...capturesTop, capturedPiece];
       setCapturesTop(newCapturesTop);
       }
