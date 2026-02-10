@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 import Board from "./components/board";
 import { useState, useEffect, act } from "react";
 import EndgameModal from "./components/endgameModal";
+import { useNavigate } from "react-router-dom";
 
 import { validateMovement, movePiece, isKingOnCheck, getPieceMovements } from "./components/board/movements";
 import { createMovement } from "../openai";
@@ -11,7 +12,7 @@ import { tempPieces, tempHistory } from "../constants.js";
 
 const types = ["pawn", "knight", "bishop", "rook", "queen"];
 
-//TODO: Cuando jugamos con las negras vs IA no se cambia el turno en localStorage
+// TODO: Hacer prueba de juego semi-completo contra la IA
 
 const defineNumbers = (gametype) => {
   const gametypeArray = gametype.split("_");
@@ -56,6 +57,8 @@ const getImage = (type, color) => {
 const Game = () => {
   const { gametype, player1, player2, difficulty } = useParams();
 
+  const navigate = useNavigate();
+
   const [pieces, setPieces] = useState([]);
   const [capturesTop, setCapturesTop] = useState([]);
   const [capturesBottom, setCapturesBottom] = useState([]);
@@ -88,7 +91,8 @@ const Game = () => {
     darkKingOnCheck,
     tempCheckmate,
     tempStalemate,
-    tempWinner
+    tempWinner,
+    newTurn,
   ) => {
     /*
     Keys:
@@ -104,7 +108,7 @@ const Game = () => {
       capturesBottom: newCapturesBottom,
       gametype: gametype,
       difficulty: difficulty,
-      turn: turn === "light" ? "dark" : "light",
+      turn: newTurn,
       isNew: false,
       lightKingOnCheck: lightKingOnCheck,
       darkKingOnCheck: darkKingOnCheck,
@@ -140,7 +144,6 @@ const Game = () => {
 
   // Para probar el checkmate y stalemte ay que usar un tablero fijo como tempPieces
   const generateAIMovement = async (newHistory, tempPieces) => {
-    // TODO: Ver tema de conversión de peones con IA
     let isValid = false;
     let regenerate = false;
     let lastGeneratedMovement;
@@ -165,6 +168,10 @@ const Game = () => {
       regenerate = true;
       lastGeneratedMovement = newMovement;
     }while(!isValid)
+
+    //Reset jaque visual
+    setLightKingOnCheck(false);
+    setDarkKingOnCheck(false);
 
     var currentPieceX = validation.piece.position.x;
       
@@ -291,9 +298,9 @@ const Game = () => {
       }
 
 
-
     setPieces(aiTempPieces);
-    setTurn(color === "white" ? "light" : "dark");
+    var newTurn = color === "white" ? "light" : "dark"
+    setTurn(newTurn);
     
     // Registrar jaque mate o stalemate
     const friendlyPieces = tempPieces.filter(
@@ -349,7 +356,8 @@ const Game = () => {
       tempDarkCheck,
       tempCheckmate,
       tempStalemate,
-      tempWinner
+      tempWinner,
+      newTurn
     );
   };
 
@@ -383,26 +391,19 @@ const Game = () => {
   return (
     <div className="game">
       <div className="top">
-        {/* TODO: Que no salga un turno cuando se acabe el juego */}
-        {/* TODO: Cuando seleccionamos ser las negras el nombre se pone arriba */}
         <h2
           className={
-            darkOnTop
+            !checkMate && !staleMate && (darkOnTop
               ? turn === "dark"
                 ? "turn"
                 : ""
               : turn === "light"
               ? "turn"
-              : ""
+              : "")
           }
         >
-          {gametype === "two-players"
-            ? player2
-            : color === "white"
-            ? player2
-            : player1}
+          {player2}
         </h2>
-        {/* TODO: Ver si ponemos outline a imagenes de captures negras */}
         <div className="captures">
           {types.map((type) => {
             const tempTypeList = capturesTop.filter((capture) => {
@@ -503,20 +504,16 @@ const Game = () => {
         <div className="player-info">
           <h2
             className={
-              turn && darkOnTop
+              !checkMate && !staleMate && (turn && darkOnTop
                 ? turn === "dark"
                   ? ""
                   : "turn"
                 : turn === "light"
                 ? ""
-                : "turn"
+                : "turn")
             }
           >
-            {gametype === "two-players"
-              ? player1
-              : color === "white"
-              ? player1
-              : player2}
+            {player1}
           </h2>
           <div className="captures">
             {types.map((type) => {
@@ -561,7 +558,7 @@ const Game = () => {
         </div>
 
         <div className="buttons-game">
-          <button>Menu</button>
+          <button id="menu-button" onClick={()=>navigate("/")}>Menu</button>
         </div>
       </div>
     </div>

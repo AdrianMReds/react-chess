@@ -229,9 +229,13 @@ const Board = ({
 
     setSelectedPiece(null);
 
+    var newTurn;
+
     if (turn === "light") {
+      newTurn = "dark";
       setTurn("dark");
     } else {
+      newTurn = "light";
       setTurn("light");
     }
 
@@ -244,7 +248,8 @@ const Board = ({
       tempDarkCheck,
       tempCheckmate,
       tempStalemate,
-      tempWinner
+      tempWinner,
+      newTurn
     );
 
     //Reiniciamos el state de openPawnModal
@@ -322,6 +327,9 @@ const Board = ({
     if (!hasPiece) {
       // POSSIBLE MOVEMENT -------------------
       if (isPossibleMovement) {
+        // Reset jaque visual
+        setLightKingOnCheck(false);
+        setDarkKingOnCheck(false);
         var pieceCommonMovements = [];
 
         // Conversión de peones
@@ -536,9 +544,13 @@ const Board = ({
 
         setSelectedPiece(null);
 
+        var newTurn;
+
         if (turn === "light") {
+          newTurn = "dark";
           setTurn("dark");
         } else {
+          newTurn = "light";
           setTurn("light");
         }
 
@@ -552,7 +564,8 @@ const Board = ({
           tempDarkCheck,
           tempCheckmate,
           tempStalemate,
-          tempWinner
+          tempWinner,
+          newTurn
         );
 
         if(gametypeName === "ai"){
@@ -569,8 +582,10 @@ const Board = ({
 
     // Checar si la tile con pieza es un possible movement && isTake===true
     //POSSIBLE TAKE ---------------------------------
-    // TODO: Cuando un rey está en jaque, si en el movimiento que lo quitamos de jaque ponemos en jaque al otro fallan los cuadritos rojos
     if (isPossibleTake) {
+      // Reset jaque visual
+      setLightKingOnCheck(false);
+      setDarkKingOnCheck(false);
       var pieceCommonMovements = [];
 
       // Conversión de peones
@@ -722,9 +737,13 @@ const Board = ({
 
       setSelectedPiece(null);
 
+      var newTurn;
+
       if (turn === "light") {
+        newTurn = "dark";
         setTurn("dark");
       } else {
+        newTurn = "light";
         setTurn("light");
       }
 
@@ -754,7 +773,8 @@ const Board = ({
         tempDarkCheck,
         tempCheckmate,
         tempStalemate,
-        tempWinner
+        tempWinner,
+        newTurn
       );
 
       if(gametypeName === "ai"){

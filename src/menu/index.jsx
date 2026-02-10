@@ -5,7 +5,6 @@ import { useNavigate } from "react-router-dom";
 import { defineNumbers } from "../game";
 import { defineInitialPositions } from "../constants";
 
-// TODO: Agregar jugar al dar click a Enter
 const Menu = () => {
   const [gametype, setGametype] = useState("two-players");
   const [player1, setPlayer1] = useState("");
@@ -83,6 +82,12 @@ const Menu = () => {
     }
   };
 
+  const handleOnKeyDown = (e) => {
+    if(e.key === "Enter"){
+      handlePlay(true);
+    }
+  }
+
   return (
     <div className="menu-container">
       {contextHolder}
@@ -111,6 +116,7 @@ const Menu = () => {
           type="text"
           placeholder="Ingresa el nombre del jugador 1"
           onChange={(e) => setPlayer1(e.target.value)}
+          onKeyDown={handleOnKeyDown}
         />
 
         {gametype === "two-players" ? (
@@ -120,6 +126,7 @@ const Menu = () => {
               type="text"
               placeholder="Ingresa el nombre del jugador 2"
               onChange={(e) => setPlayer2(e.target.value)}
+              onKeyDown={handleOnKeyDown}
             />
           </>
         ) : (

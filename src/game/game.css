@@ -39,6 +39,7 @@
 .captures div img {
   height: 5vh;
   width: 5vh;
+  filter: drop-shadow(0px 0px 1px white);
 }
 
 .details {
@@ -107,4 +108,8 @@
 
 h2.turn {
   text-decoration: underline;
+}
+
+#menu-button{
+  cursor: pointer;
 }

@@ -504,7 +504,6 @@ Reglas de enroque:
 3. Que ninguno de los cuadritos por donde se desplaza el rey estén en jaque.
 */
 
-//TODO: No jala el enroque corto cuando jugamos con las negras vs IA
 const getKingMovements = (
   piece,
   x,
@@ -1078,7 +1077,6 @@ const getMovementsInCommon = (
 };
 
 const validateMovement = (pieces, piece, movement, darkOnTop, lastMovement) => {
-  // TODO: MANEJAR EN PASANT
   const darkxvalues = {
     a: 0,
     b: 1,
@@ -1100,8 +1098,6 @@ const validateMovement = (pieces, piece, movement, darkOnTop, lastMovement) => {
     g: 1,
     h: 0,
   };
-  // piece : d7
-  // movement : d5
 
   // Pieza -> Coordenadas
   const pieceX = piece[0];
