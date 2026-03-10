@@ -568,7 +568,7 @@ const Board = ({
           newTurn
         );
 
-        if(gametypeName === "ai"){
+        if(gametypeName === "ai" && !tempCheckmate && !tempStalemate){
           generateAIMovement(newHistory, tempPieces);
         }
         
@@ -777,7 +777,7 @@ const Board = ({
         newTurn
       );
 
-      if(gametypeName === "ai"){
+      if(gametypeName === "ai" && !tempCheckmate && !tempStalemate){
         generateAIMovement(newHistory, tempPieces);
       }
 

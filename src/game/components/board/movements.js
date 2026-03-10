@@ -536,7 +536,7 @@ const getKingMovements = (
       : movement;
   });
 
-  if (!piece.hasMoved) {
+  if (!piece.hasMoved && isKingOnCheck(pieces, piece.position, piece, darkOnTop)) {
     //Encontrar las torres amigas
     const rook1 = pieces.find((p) => {
       return p.type === "rook" && p.color === piece.color;

@@ -1,9 +1,10 @@
 import "./game.css";
 import { useParams } from "react-router-dom";
 import Board from "./components/board";
-import { useState, useEffect, act } from "react";
+import { useState, useEffect, useRef } from "react";
 import EndgameModal from "./components/endgameModal";
 import { useNavigate } from "react-router-dom";
+import { Spin } from 'antd';
 
 import { validateMovement, movePiece, isKingOnCheck, getPieceMovements } from "./components/board/movements";
 import { createMovement } from "../openai";
@@ -11,8 +12,6 @@ import { createMovement } from "../openai";
 import { tempPieces, tempHistory } from "../constants.js";
 
 const types = ["pawn", "knight", "bishop", "rook", "queen"];
-
-// TODO: Hacer prueba de juego semi-completo contra la IA
 
 const defineNumbers = (gametype) => {
   const gametypeArray = gametype.split("_");
@@ -55,9 +54,13 @@ const getImage = (type, color) => {
   };
 
 const Game = () => {
+  const executed = useRef(false);
+  
   const { gametype, player1, player2, difficulty } = useParams();
 
   const navigate = useNavigate();
+
+  const [loading, setLoading] = useState(false);
 
   const [pieces, setPieces] = useState([]);
   const [capturesTop, setCapturesTop] = useState([]);
@@ -144,6 +147,7 @@ const Game = () => {
 
   // Para probar el checkmate y stalemte ay que usar un tablero fijo como tempPieces
   const generateAIMovement = async (newHistory, tempPieces) => {
+    setLoading(true);
     let isValid = false;
     let regenerate = false;
     let lastGeneratedMovement;
@@ -156,6 +160,8 @@ const Game = () => {
       regenerate
       ); 
 
+      console.log("Movimiento generado:", newMovement);
+
       var validation = validateMovement(
         tempPieces,
         newMovement.pieza,
@@ -163,6 +169,8 @@ const Game = () => {
         darkOnTop,
         getLastMovement(newHistory)
       );
+
+      console.log("Validación:", validation);
 
       isValid = validation.isValid;
       regenerate = true;
@@ -359,9 +367,13 @@ const Game = () => {
       tempWinner,
       newTurn
     );
+    setLoading(false);
   };
 
   useEffect(() => {
+    if (executed.current){
+      return;
+    }
     const actualConfiguration = JSON.parse(localStorage.getItem(gametype));
     
     if (
@@ -370,6 +382,7 @@ const Game = () => {
       color === "black"
     ) {
       // Empieza la IA
+      executed.current = true;
       generateAIMovement([], actualConfiguration.pieces);
     }
 
@@ -388,6 +401,13 @@ const Game = () => {
     setWinner(actualConfiguration.winner);
   }, []);
 
+  const stylesObject = {
+    indicator: {
+      color: '#ebecd0',
+      marginLeft: 10,
+    },
+  };
+
   return (
     <div className="game">
       <div className="top">
@@ -402,8 +422,9 @@ const Game = () => {
               : "")
           }
         >
-          {player2}
+          {player2} {loading && <Spin size="medium" style={{marginLeft: 10}} />}
         </h2>
+        
         <div className="captures">
           {types.map((type) => {
             const tempTypeList = capturesTop.filter((capture) => {

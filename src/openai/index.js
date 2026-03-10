@@ -21,6 +21,7 @@ const createMovement = async (difficulty, history, turn, regenerate, lastGenerat
 
     for (const element of response.data.output) {
       if (element.type === "message") {
+        console.log("Regresando de OPENAI:", JSON.parse(element.content[0].text));
         return JSON.parse(element.content[0].text);
       }
     }
